@@ -1,9 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import {
-  DollarSign,
   TrendingUp,
   Calendar,
   Bell,
@@ -12,6 +10,7 @@ import {
   CreditCard,
   Unlock,
   ArrowUpCircle,
+  XCircle,
   User as UserIcon,
   Mail,
   Phone,
@@ -19,6 +18,7 @@ import {
   CheckCircle,
   ArrowLeft,
 } from "lucide-react";
+import { RupeeIcon } from "@/components/RupeeIcon";
 import {
   LineChart,
   Line,
@@ -66,7 +66,18 @@ const CustomerDetail = () => {
   }
 
   const transactions = getTransactionsByCustomerId(customer.id);
-  const outstandingPercentage = (customer.outstandingNumeric / customer.loanAmountNumeric) * 100;
+  const paidAmount = customer.loanAmountNumeric - customer.outstandingNumeric;
+  const repaidPercentage = (paidAmount / customer.loanAmountNumeric) * 100;
+  const disbursedDate = new Date(customer.disbursedDate).toLocaleDateString('en-IN', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  });
+  const dueDate = new Date(customer.dueDate).toLocaleDateString('en-IN', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  });
 
   return (
     <div className="space-y-6">
@@ -146,13 +157,13 @@ const CustomerDetail = () => {
               Loan Amount
             </CardTitle>
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gray-100">
-              <DollarSign className="h-4 w-4 text-gray-500" />
+              <RupeeIcon className="h-4 w-4 text-gray-500" />
             </div>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-foreground">{customer.loanAmount}</div>
             <p className="text-xs text-muted-foreground mt-1">
-              Disbursed on {new Date(customer.disbursedDate).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}
+              Disbursed on {disbursedDate}
             </p>
           </CardContent>
         </Card>
@@ -168,15 +179,24 @@ const CustomerDetail = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-foreground">{customer.outstandingBalance}</div>
-            <Progress value={outstandingPercentage} className="mt-2" />
-            <p className="text-xs text-muted-foreground mt-1">{outstandingPercentage.toFixed(2)}% remaining</p>
+            <div className="mt-2">
+              <div className="relative h-2 w-full rounded-full bg-gray-200 overflow-hidden">
+                <div
+                  className="absolute inset-y-0 left-0 bg-gradient-to-r from-green-500 to-green-600 rounded-full transition-all"
+                  style={{ width: `${repaidPercentage}%` }}
+                ></div>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              {repaidPercentage.toFixed(1)}% repaid • {customer.outstandingBalance} remaining
+            </p>
           </CardContent>
         </Card>
 
         <Card className="shadow-soft hover:shadow-medium transition-all">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Next Repayment
+              Amount to be Paid
             </CardTitle>
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gray-100">
               <Calendar className="h-4 w-4 text-gray-500" />
@@ -184,7 +204,9 @@ const CustomerDetail = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-foreground">{customer.nextPayment}</div>
-            <p className="text-xs text-muted-foreground mt-1">Due on {new Date(customer.dueDate).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Due on {dueDate}
+            </p>
           </CardContent>
         </Card>
 
@@ -198,11 +220,11 @@ const CustomerDetail = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <Badge className={`font-medium ${customer.status === "Active" ? "bg-[#ECFDF5] text-[#059669]" : "bg-[#FFFBEB] text-[#D97706]"}`}>
+            <Badge className={`font-medium ${customer.status === "Active" ? "bg-[#ECFDF5] text-[#059669]" : "bg-[#FEF2F2] text-[#DC2626]"}`}>
               {customer.status}
             </Badge>
             <p className="text-xs text-muted-foreground mt-2">
-              {customer.status === "Active" ? "All payments on time" : "Requires attention"}
+              All payments on time
             </p>
           </CardContent>
         </Card>
@@ -214,8 +236,8 @@ const CustomerDetail = () => {
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle>Collateral Summary</CardTitle>
-              <Badge className={`font-medium ${customer.ltvNumeric > 70 ? "bg-[#FEF2F2] text-[#DC2626]" : "bg-[#ECFDF5] text-[#059669]"}`}>
-                {customer.ltvNumeric > 70 ? "At Risk" : "Healthy"}
+              <Badge className={`font-medium ${customer.ltvNumeric <= 60 ? "bg-[#ECFDF5] text-[#059669]" : customer.ltvNumeric <= 70 ? "bg-[#FFFBEB] text-[#D97706]" : "bg-[#FEF2F2] text-[#DC2626]"}`}>
+                {customer.ltvNumeric <= 60 ? "Healthy" : customer.ltvNumeric <= 70 ? "Caution" : "At Risk"}
               </Badge>
             </div>
           </CardHeader>
@@ -238,13 +260,22 @@ const CustomerDetail = () => {
               </div>
               <div className="relative h-8 w-full rounded-full bg-muted overflow-hidden">
                 <div className="absolute inset-0 flex">
-                  <div className="h-full bg-success" style={{ width: "60%" }}></div>
-                  <div className="h-full bg-warning" style={{ width: "20%" }}></div>
-                  <div className="h-full bg-destructive" style={{ width: "20%" }}></div>
+                  <div
+                    className="h-full bg-success"
+                    style={{ width: "60%" }}
+                  ></div>
+                  <div
+                    className="h-full bg-warning"
+                    style={{ width: "10%" }}
+                  ></div>
+                  <div
+                    className="h-full bg-destructive"
+                    style={{ width: "30%" }}
+                  ></div>
                 </div>
                 <div
                   className="absolute top-0 h-full w-1 bg-foreground"
-                  style={{ left: customer.ltv }}
+                  style={{ left: `${customer.ltvNumeric}%` }}
                 >
                   <div className="absolute -top-1 left-1/2 -translate-x-1/2 h-10 w-10 flex items-center justify-center">
                     <div className="h-3 w-3 rounded-full bg-foreground border-2 border-background"></div>
@@ -284,11 +315,14 @@ const CustomerDetail = () => {
               <LineChart data={collateralData}>
                 <defs>
                   <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#00CC66" stopOpacity={0.5} />
+                    <stop offset="95%" stopColor="#00CC66" stopOpacity={0.05} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="hsl(var(--border))"
+                />
                 <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" />
                 <YAxis stroke="hsl(var(--muted-foreground))" />
                 <Tooltip
@@ -301,10 +335,12 @@ const CustomerDetail = () => {
                 <Line
                   type="monotone"
                   dataKey="value"
-                  stroke="hsl(var(--primary))"
-                  strokeWidth={2}
+                  stroke="#00CC66"
+                  strokeWidth={3}
                   fill="url(#colorValue)"
                   name="Value (₹ in '000s)"
+                  dot={{ fill: "#00CC66", strokeWidth: 2, r: 4 }}
+                  activeDot={{ r: 6 }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -318,36 +354,69 @@ const CustomerDetail = () => {
           <CardTitle>Quick Actions</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-            <Button className="justify-start h-auto py-4 bg-gradient-primary hover:opacity-90">
-              <CreditCard className="mr-3 h-5 w-5" />
+          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-5">
+            <Button
+              variant="outline"
+              className="justify-start h-auto py-4"
+            >
+              <CreditCard className="mr-3 h-5 w-5 text-[#FF9900]" />
               <div className="text-left">
-                <p className="font-semibold">Make Repayment</p>
-                <p className="text-xs opacity-90">Make payment now</p>
+                <p className="font-semibold">Repay Bill</p>
+                <p className="text-sm text-muted-foreground">Make payment now</p>
               </div>
             </Button>
 
-            <Button variant="outline" className="justify-start h-auto py-4">
+            <Button
+              variant="outline"
+              className="justify-start h-auto py-4"
+            >
               <Unlock className="mr-3 h-5 w-5 text-[#0099FF]" />
               <div className="text-left">
-                <p className="font-semibold">Release Collateral</p>
-                <p className="text-xs text-muted-foreground">Unpledge assets</p>
+                <p className="font-semibold">
+                  Release Collateral
+                </p>
+                <p className="text-sm text-muted-foreground">Unpledge assets</p>
               </div>
             </Button>
 
-            <Button variant="outline" className="justify-start h-auto py-4">
+            <Button
+              variant="outline"
+              className="justify-start h-auto py-4"
+            >
               <Plus className="mr-3 h-5 w-5 text-[#00CC66]" />
               <div className="text-left">
-                <p className="font-semibold">Add Collateral</p>
-                <p className="text-xs text-muted-foreground">Pledge more assets</p>
+                <p className="font-semibold">
+                  Add Collateral
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Pledge more assets
+                </p>
               </div>
             </Button>
 
-            <Button variant="outline" className="justify-start h-auto py-4">
+            <Button
+              variant="outline"
+              className="justify-start h-auto py-4"
+            >
               <ArrowUpCircle className="mr-3 h-5 w-5 text-[#9933FF]" />
               <div className="text-left">
-                <p className="font-semibold">Top-Up Loan</p>
-                <p className="text-xs text-muted-foreground">Increase amount</p>
+                <p className="font-semibold">
+                  Top-Up Loan
+                </p>
+                <p className="text-sm text-muted-foreground">Increase amount</p>
+              </div>
+            </Button>
+
+            <Button
+              variant="outline"
+              className="justify-start h-auto py-4"
+            >
+              <XCircle className="mr-3 h-5 w-5 text-[#FF3333]" />
+              <div className="text-left">
+                <p className="font-semibold">
+                  Foreclosure
+                </p>
+                <p className="text-sm text-muted-foreground">Close loan early</p>
               </div>
             </Button>
           </div>
@@ -370,18 +439,42 @@ const CustomerDetail = () => {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-border">
-                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Date</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Transaction Type</th>
-                  <th className="text-right py-3 px-4 text-sm font-medium text-muted-foreground">Amount</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Status</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                    Date
+                  </th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                    Transaction Type
+                  </th>
+                  <th className="text-right py-3 px-4 text-sm font-medium text-muted-foreground">
+                    Amount
+                  </th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                    Status
+                  </th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                    Reference
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {transactions.map((txn) => (
-                  <tr key={txn.id} className="border-b border-border hover:bg-muted/30 transition-colors">
-                    <td className="py-3 px-4 text-sm text-muted-foreground">{new Date(txn.date).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
-                    <td className="py-3 px-4 text-sm font-medium text-foreground">{txn.type}</td>
-                    <td className="py-3 px-4 text-sm text-right font-semibold text-foreground">{txn.amount}</td>
+                  <tr
+                    key={txn.id}
+                    className="border-b border-border hover:bg-muted/30 transition-colors"
+                  >
+                    <td className="py-3 px-4 text-sm text-muted-foreground">
+                      {new Date(txn.date).toLocaleDateString('en-IN', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                      })}
+                    </td>
+                    <td className="py-3 px-4 text-sm font-medium text-foreground">
+                      {txn.type}
+                    </td>
+                    <td className="py-3 px-4 text-sm text-right font-semibold text-foreground">
+                      {txn.amount}
+                    </td>
                     <td className="py-3 px-4 text-sm">
                       <Badge className={`font-medium ${
                         txn.status === "Completed" ? "bg-[#ECFDF5] text-[#059669]" :
@@ -390,6 +483,9 @@ const CustomerDetail = () => {
                       }`}>
                         {txn.status}
                       </Badge>
+                    </td>
+                    <td className="py-3 px-4 text-sm font-mono text-muted-foreground">
+                      {txn.referenceNumber}
                     </td>
                   </tr>
                 ))}

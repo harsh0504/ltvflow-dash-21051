@@ -49,7 +49,7 @@ export interface Transaction {
   id: string;
   customerId: string;
   date: string;
-  type: "EMI Payment" | "Collateral Added" | "Collateral Released" | "Top-Up" | "Foreclosure" | "Late Fee";
+  type: "Bill Payment" | "Collateral Added" | "Collateral Released" | "Top-Up" | "Foreclosure" | "Late Fee";
   amount: string;
   amountNumeric: number;
   status: "Completed" | "Pending" | "Failed";
@@ -379,23 +379,45 @@ export const mockApplications: Application[] = [
 // Mock Transactions Data
 export const mockTransactions: Transaction[] = [
   // CUS001 - Rajesh Kumar Sharma
-  { id: "TXN001", customerId: "CUS001", date: "2024-07-15", type: "EMI Payment", amount: "₹45,000", amountNumeric: 45000, status: "Completed", referenceNumber: "REF2024071501" },
-  { id: "TXN002", customerId: "CUS001", date: "2024-06-15", type: "EMI Payment", amount: "₹45,000", amountNumeric: 45000, status: "Completed", referenceNumber: "REF2024061501" },
+  { id: "TXN001", customerId: "CUS001", date: "2024-07-15", type: "Bill Payment", amount: "₹45,000", amountNumeric: 45000, status: "Completed", referenceNumber: "REF2024071501" },
+  { id: "TXN002", customerId: "CUS001", date: "2024-06-15", type: "Bill Payment", amount: "₹45,000", amountNumeric: 45000, status: "Completed", referenceNumber: "REF2024061501" },
   { id: "TXN003", customerId: "CUS001", date: "2024-04-20", type: "Collateral Added", amount: "₹5,00,000", amountNumeric: 500000, status: "Completed", referenceNumber: "REF2024042001" },
 
   // CUS002 - Priya Deshmukh
-  { id: "TXN004", customerId: "CUS002", date: "2024-07-20", type: "EMI Payment", amount: "₹78,000", amountNumeric: 78000, status: "Completed", referenceNumber: "REF2024072001" },
-  { id: "TXN005", customerId: "CUS002", date: "2024-06-20", type: "EMI Payment", amount: "₹78,000", amountNumeric: 78000, status: "Completed", referenceNumber: "REF2024062001" },
+  { id: "TXN004", customerId: "CUS002", date: "2024-07-20", type: "Bill Payment", amount: "₹78,000", amountNumeric: 78000, status: "Completed", referenceNumber: "REF2024072001" },
+  { id: "TXN005", customerId: "CUS002", date: "2024-06-20", type: "Bill Payment", amount: "₹78,000", amountNumeric: 78000, status: "Completed", referenceNumber: "REF2024062001" },
 
   // CUS003 - Amit Patel
-  { id: "TXN006", customerId: "CUS003", date: "2024-07-18", type: "EMI Payment", amount: "₹32,000", amountNumeric: 32000, status: "Completed", referenceNumber: "REF2024071801" },
-  { id: "TXN007", customerId: "CUS003", date: "2024-06-18", type: "EMI Payment", amount: "₹32,000", amountNumeric: 32000, status: "Pending", referenceNumber: "REF2024061801" },
+  { id: "TXN006", customerId: "CUS003", date: "2024-07-18", type: "Bill Payment", amount: "₹32,000", amountNumeric: 32000, status: "Completed", referenceNumber: "REF2024071801" },
+  { id: "TXN007", customerId: "CUS003", date: "2024-06-18", type: "Bill Payment", amount: "₹32,000", amountNumeric: 32000, status: "Pending", referenceNumber: "REF2024061801" },
   { id: "TXN008", customerId: "CUS003", date: "2024-05-20", type: "Late Fee", amount: "₹500", amountNumeric: 500, status: "Completed", referenceNumber: "REF2024052001" },
 
   // CUS004 - Sneha Iyer
-  { id: "TXN009", customerId: "CUS004", date: "2024-07-22", type: "EMI Payment", amount: "₹1,05,000", amountNumeric: 105000, status: "Completed", referenceNumber: "REF2024072201" },
-  { id: "TXN010", customerId: "CUS004", date: "2024-06-22", type: "EMI Payment", amount: "₹1,05,000", amountNumeric: 105000, status: "Completed", referenceNumber: "REF2024062201" },
+  { id: "TXN009", customerId: "CUS004", date: "2024-07-22", type: "Bill Payment", amount: "₹1,05,000", amountNumeric: 105000, status: "Completed", referenceNumber: "REF2024072201" },
+  { id: "TXN010", customerId: "CUS004", date: "2024-06-22", type: "Bill Payment", amount: "₹1,05,000", amountNumeric: 105000, status: "Completed", referenceNumber: "REF2024062201" },
   { id: "TXN011", customerId: "CUS004", date: "2024-05-10", type: "Top-Up", amount: "₹10,00,000", amountNumeric: 1000000, status: "Completed", referenceNumber: "REF2024051001" },
+
+  // CUS005 - Vikram Singh Rathore
+  { id: "TXN012", customerId: "CUS005", date: "2024-07-10", type: "Bill Payment", amount: "₹62,000", amountNumeric: 62000, status: "Completed", referenceNumber: "REF2024071001" },
+  { id: "TXN013", customerId: "CUS005", date: "2024-06-10", type: "Bill Payment", amount: "₹62,000", amountNumeric: 62000, status: "Completed", referenceNumber: "REF2024061001" },
+  { id: "TXN014", customerId: "CUS005", date: "2024-05-10", type: "Bill Payment", amount: "₹62,000", amountNumeric: 62000, status: "Completed", referenceNumber: "REF2024051002" },
+  { id: "TXN015", customerId: "CUS005", date: "2024-04-10", type: "Bill Payment", amount: "₹62,000", amountNumeric: 62000, status: "Completed", referenceNumber: "REF2024041001" },
+
+  // CUS006 - Ananya Chatterjee
+  { id: "TXN016", customerId: "CUS006", date: "2024-07-25", type: "Bill Payment", amount: "₹41,000", amountNumeric: 41000, status: "Completed", referenceNumber: "REF2024072501" },
+  { id: "TXN017", customerId: "CUS006", date: "2024-06-25", type: "Bill Payment", amount: "₹41,000", amountNumeric: 41000, status: "Completed", referenceNumber: "REF2024062501" },
+  { id: "TXN018", customerId: "CUS006", date: "2024-06-05", type: "Collateral Added", amount: "₹3,50,000", amountNumeric: 350000, status: "Completed", referenceNumber: "REF2024060501" },
+
+  // CUS007 - Arjun Reddy
+  { id: "TXN019", customerId: "CUS007", date: "2024-07-08", type: "Bill Payment", amount: "₹92,000", amountNumeric: 92000, status: "Completed", referenceNumber: "REF2024070801" },
+  { id: "TXN020", customerId: "CUS007", date: "2024-06-08", type: "Bill Payment", amount: "₹92,000", amountNumeric: 92000, status: "Completed", referenceNumber: "REF2024060801" },
+  { id: "TXN021", customerId: "CUS007", date: "2024-05-08", type: "Bill Payment", amount: "₹92,000", amountNumeric: 92000, status: "Completed", referenceNumber: "REF2024050801" },
+  { id: "TXN022", customerId: "CUS007", date: "2024-03-15", type: "Collateral Released", amount: "₹8,00,000", amountNumeric: 800000, status: "Completed", referenceNumber: "REF2024031501" },
+  { id: "TXN023", customerId: "CUS007", date: "2024-02-08", type: "Bill Payment", amount: "₹92,000", amountNumeric: 92000, status: "Completed", referenceNumber: "REF2024020801" },
+
+  // CUS008 - Meera Kapoor
+  { id: "TXN024", customerId: "CUS008", date: "2024-07-12", type: "Bill Payment", amount: "₹55,000", amountNumeric: 55000, status: "Completed", referenceNumber: "REF2024071201" },
+  { id: "TXN025", customerId: "CUS008", date: "2024-07-01", type: "Collateral Added", amount: "₹2,50,000", amountNumeric: 250000, status: "Pending", referenceNumber: "REF2024070101" },
 ];
 
 // Helper function to get customer by ID
