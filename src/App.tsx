@@ -6,6 +6,7 @@ import { AnimatePresence } from "motion/react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { PageTransition } from "@/components/PageTransition";
+import { SidebarStateProvider, useSidebarState } from "@/contexts/SidebarContext";
 import Overview from "./pages/Overview";
 import BusinessRules from "./pages/BusinessRules";
 import Portfolio from "./pages/Portfolio";
@@ -37,19 +38,27 @@ const AnimatedRoutes = () => {
   );
 };
 
+const MainLayout = () => {
+  return (
+    <div className="flex h-screen w-full bg-background overflow-hidden">
+      <AppSidebar />
+      <main className="flex-1 p-6 overflow-auto">
+        <AnimatedRoutes />
+      </main>
+    </div>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <BrowserRouter>
-        <SidebarProvider>
-          <div className="flex min-h-screen w-full bg-background">
-            <AppSidebar />
-            <main className="flex-1 p-6 overflow-auto">
-              <AnimatedRoutes />
-            </main>
-          </div>
-        </SidebarProvider>
+        <SidebarStateProvider>
+          <SidebarProvider>
+            <MainLayout />
+          </SidebarProvider>
+        </SidebarStateProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
