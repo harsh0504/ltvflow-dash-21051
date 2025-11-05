@@ -1,4 +1,5 @@
 import { MetricCard } from "@/components/MetricCard";
+import { FloatingChatBot } from "@/components/FloatingChatBot";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +10,8 @@ import {
   Download,
   Search,
   AlertTriangle,
+  Upload,
+  Sparkles,
 } from "lucide-react";
 import { RupeeIcon } from "@/components/RupeeIcon";
 import {
@@ -21,11 +24,11 @@ import {
 } from "recharts";
 
 const assetComposition = [
-  { name: "Equities", value: 45, color: "hsl(var(--primary))" },
-  { name: "Mutual Funds", value: 30, color: "hsl(var(--secondary))" },
-  { name: "Bonds", value: 15, color: "hsl(var(--accent))" },
-  { name: "ETFs", value: 7, color: "hsl(var(--success))" },
-  { name: "Other", value: 3, color: "hsl(var(--muted-foreground))" },
+  { name: "Equities", value: 45, color: "#60A5FA" },
+  { name: "Mutual Funds", value: 30, color: "#A855F7" },
+  { name: "Bonds", value: 15, color: "#14B8A6" },
+  { name: "ETFs", value: 7, color: "#FB923C" },
+  { name: "Gold", value: 3, color: "#3B82F6" },
 ];
 
 const assets = [
@@ -37,6 +40,42 @@ const assets = [
 ];
 
 const Portfolio = () => {
+  const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, name, value, fill }: any) => {
+    const RADIAN = Math.PI / 180;
+    const radius = outerRadius + 25;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    return (
+      <text
+        x={x}
+        y={y}
+        fill={fill}
+        textAnchor={x > cx ? 'start' : 'end'}
+        dominantBaseline="central"
+        style={{ fontWeight: 500, fontSize: '14px' }}
+      >
+        {`${name}: ${value}%`}
+      </text>
+    );
+  };
+
+  const getLtvBadgeColor = (ltv: string, status: string) => {
+    if (status === "At-risk") {
+      return "bg-[#FEF2F2] text-[#DC2626]";
+    }
+    return "bg-[#F3F4F6] text-[#374151]";
+  };
+
+  const getStatusBadgeColor = (status: string) => {
+    if (status === "Healthy") {
+      return "bg-[#ECFDF5] text-[#059669]";
+    } else if (status === "At-risk") {
+      return "bg-[#FFFBEB] text-[#D97706]";
+    }
+    return "bg-[#F3F4F6] text-[#374151]";
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -83,7 +122,7 @@ const Portfolio = () => {
 
       {/* Asset Composition */}
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="shadow-medium">
+        <Card animate className="shadow-medium">
           <CardHeader>
             <CardTitle>Asset Composition</CardTitle>
           </CardHeader>
@@ -95,7 +134,7 @@ const Portfolio = () => {
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ name, value }) => `${name}: ${value}%`}
+                  label={renderCustomLabel}
                   outerRadius={100}
                   fill="#8884d8"
                   dataKey="value"
@@ -104,19 +143,12 @@ const Portfolio = () => {
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "hsl(var(--card))",
-                    border: "1px solid hsl(var(--border))",
-                    borderRadius: "var(--radius)",
-                  }}
-                />
               </PieChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        <Card className="shadow-medium">
+        <Card animate className="shadow-medium">
           <CardHeader>
             <CardTitle>Top Holdings by Value</CardTitle>
           </CardHeader>
@@ -134,9 +166,9 @@ const Portfolio = () => {
                     <span className="font-medium text-foreground">{holding.name}</span>
                     <span className="text-muted-foreground">{holding.amount}</span>
                   </div>
-                  <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+                  <div className="h-2 w-full rounded-full bg-gray-200 overflow-hidden">
                     <div
-                      className="h-full bg-gradient-primary"
+                      className="h-full bg-gradient-to-r from-blue-500 to-blue-600"
                       style={{ width: `${holding.value}%` }}
                     />
                   </div>
@@ -147,21 +179,35 @@ const Portfolio = () => {
         </Card>
       </div>
 
+      {/* Search and Actions Bar */}
+      <div className="flex items-center justify-between gap-4">
+        <div className="relative w-80">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Search customers by name, ID, or ISIN..."
+            className="pl-9"
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm">
+            <Upload className="mr-2 h-4 w-4" />
+            Import
+          </Button>
+          <Button variant="outline" size="sm">
+            <Download className="mr-2 h-4 w-4" />
+            Export
+          </Button>
+          <Button size="sm" className="bg-gradient-primary hover:opacity-90">
+            <Sparkles className="mr-2 h-4 w-4" />
+            Ask AI
+          </Button>
+        </div>
+      </div>
+
       {/* Asset Table */}
       <Card className="shadow-medium">
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>Asset Details & LTV Tracking</CardTitle>
-            <div className="flex items-center gap-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  placeholder="Search by ISIN or name..."
-                  className="pl-9 w-64"
-                />
-              </div>
-            </div>
-          </div>
+          <CardTitle>Asset Details & LTV Tracking</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
@@ -187,7 +233,7 @@ const Portfolio = () => {
                     <td className="py-3 px-4 text-sm text-right font-medium text-foreground">{asset.value}</td>
                     <td className="py-3 px-4 text-sm text-right text-muted-foreground">{asset.pledged}</td>
                     <td className="py-3 px-4 text-sm text-right">
-                      <Badge variant={asset.status === "At-risk" ? "destructive" : "secondary"}>
+                      <Badge className={`${getLtvBadgeColor(asset.ltv, asset.status)} font-medium`}>
                         {asset.ltv}
                       </Badge>
                     </td>
@@ -197,14 +243,7 @@ const Portfolio = () => {
                       {asset.movement}
                     </td>
                     <td className="py-3 px-4 text-sm">
-                      <Badge
-                        variant="outline"
-                        className={
-                          asset.status === "Healthy"
-                            ? "border-success text-success"
-                            : "border-warning text-warning"
-                        }
-                      >
+                      <Badge className={`${getStatusBadgeColor(asset.status)} font-medium`}>
                         {asset.status}
                       </Badge>
                     </td>
@@ -215,6 +254,9 @@ const Portfolio = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Floating ChatBot */}
+      <FloatingChatBot />
     </div>
   );
 };

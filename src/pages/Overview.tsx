@@ -23,28 +23,35 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
+import { getPortfolioMetrics, mockCustomers } from "@/data/mockData";
 
+// Realistic disbursement data (in lakhs)
 const disbursementData = [
-  { month: "Jan", disbursed: 4200, repaid: 3800 },
-  { month: "Feb", disbursed: 5100, repaid: 4200 },
-  { month: "Mar", disbursed: 4800, repaid: 4500 },
-  { month: "Apr", disbursed: 6200, repaid: 5100 },
-  { month: "May", disbursed: 7500, repaid: 6300 },
-  { month: "Jun", disbursed: 8200, repaid: 7100 },
+  { month: "Jan", disbursed: 200, repaid: 155 },
+  { month: "Feb", disbursed: 350, repaid: 180 },
+  { month: "Mar", disbursed: 280, repaid: 195 },
+  { month: "Apr", disbursed: 420, repaid: 225 },
+  { month: "May", disbursed: 500, repaid: 285 },
+  { month: "Jun", disbursed: 420, repaid: 310 },
 ];
 
+// DPD distribution based on realistic data
 const riskData = [
-  { category: "0-7 Days", count: 45 },
-  { category: "8-15 Days", count: 38 },
-  { category: "16-30 Days", count: 52 },
-  { category: "31-45 Days", count: 28 },
-  { category: "46-60 Days", count: 15 },
-  { category: "61-75 Days", count: 19 },
-  { category: "76-90 Days", count: 8 },
-  { category: "90+ Days", count: 12 },
+  { category: "0-7 Days", count: 5 },
+  { category: "8-15 Days", count: 2 },
+  { category: "16-30 Days", count: 1 },
+  { category: "31-45 Days", count: 0 },
+  { category: "46-60 Days", count: 0 },
+  { category: "61-75 Days", count: 0 },
+  { category: "76-90 Days", count: 0 },
+  { category: "90+ Days", count: 0 },
 ];
 
 const Overview = () => {
+  const metrics = getPortfolioMetrics();
+  const averageInterestRate = (mockCustomers.reduce((sum, c) => sum + c.interestRate, 0) / mockCustomers.length).toFixed(2);
+  const npaRate = ((metrics.atRiskCustomers / metrics.totalCustomers) * 100).toFixed(1);
+
   return (
     <div className="space-y-6">
       <div>
@@ -58,37 +65,37 @@ const Overview = () => {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <MetricCard
           title="Total Outstanding"
-          value="₹124.5M"
-          subtitle="Across 1,234 loans"
+          value={metrics.totalOutstanding}
+          subtitle={`Across ${metrics.totalCustomers} active loans`}
           icon={RupeeIcon}
-          trend={{ value: "12.5%", isPositive: true }}
+          trend={{ value: "8.3%", isPositive: true }}
         />
         <MetricCard
           title="Active Loans"
-          value="1,234"
-          subtitle="658 new this month"
+          value={metrics.activeCustomers.toString()}
+          subtitle={`${metrics.atRiskCustomers} at risk`}
           icon={Users}
-          trend={{ value: "8.2%", isPositive: true }}
+          trend={{ value: "5.7%", isPositive: true }}
         />
         <MetricCard
           title="Portfolio Yield"
-          value="9.2%"
+          value={`${averageInterestRate}%`}
           subtitle="Average interest rate"
           icon={TrendingUp}
-          trend={{ value: "0.5%", isPositive: true }}
+          trend={{ value: "0.3%", isPositive: true }}
         />
         <MetricCard
           title="NPA Rate"
-          value="1.8%"
+          value={`${npaRate}%`}
           subtitle="Non-performing assets"
           icon={AlertCircle}
-          trend={{ value: "0.3%", isPositive: false }}
+          trend={{ value: "0.2%", isPositive: false }}
         />
       </div>
 
       {/* Charts */}
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="shadow-medium">
+        <Card animate className="shadow-medium">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               Disbursement vs Repayment Trends
@@ -100,12 +107,12 @@ const Overview = () => {
               <AreaChart data={disbursementData}>
                 <defs>
                   <linearGradient id="colorDisbursed" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#9933FF" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#9933FF" stopOpacity={0.1} />
                   </linearGradient>
                   <linearGradient id="colorRepaid" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(var(--secondary))" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="hsl(var(--secondary))" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#00CC66" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#00CC66" stopOpacity={0.1} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
@@ -122,7 +129,8 @@ const Overview = () => {
                 <Area
                   type="monotone"
                   dataKey="disbursed"
-                  stroke="hsl(var(--primary))"
+                  stroke="#9933FF"
+                  strokeWidth={2}
                   fillOpacity={1}
                   fill="url(#colorDisbursed)"
                   name="Disbursed (₹ Lakhs)"
@@ -130,7 +138,8 @@ const Overview = () => {
                 <Area
                   type="monotone"
                   dataKey="repaid"
-                  stroke="hsl(var(--secondary))"
+                  stroke="#00CC66"
+                  strokeWidth={2}
                   fillOpacity={1}
                   fill="url(#colorRepaid)"
                   name="Repaid (₹ Lakhs)"
@@ -140,7 +149,7 @@ const Overview = () => {
           </CardContent>
         </Card>
 
-        <Card className="shadow-medium">
+        <Card animate className="shadow-medium">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               DPD Distribution
@@ -161,7 +170,7 @@ const Overview = () => {
                   }}
                   cursor={{ fill: 'hsl(var(--muted))' }}
                 />
-                <Bar dataKey="count" fill="hsl(var(--accent))" name="Number of Loans" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="count" fill="#0099FF" name="Number of Loans" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -169,17 +178,17 @@ const Overview = () => {
       </div>
 
       {/* Recent Activity */}
-      <Card className="shadow-medium">
+      <Card animate className="shadow-medium">
         <CardHeader>
           <CardTitle>Recent Activity</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {[
-              { type: "disbursement", amount: "₹2.5L", customer: "Rajesh Kumar", time: "2 hours ago", isPositive: true },
-              { type: "repayment", amount: "₹1.8L", customer: "Priya Sharma", time: "4 hours ago", isPositive: true },
+              { type: "repayment", amount: "₹1,05,000", customer: "Sneha Iyer", time: "2 hours ago", isPositive: true },
+              { type: "repayment", amount: "₹78,000", customer: "Priya Deshmukh", time: "4 hours ago", isPositive: true },
               { type: "alert", amount: "LTV Breach", customer: "Amit Patel", time: "6 hours ago", isPositive: false },
-              { type: "disbursement", amount: "₹3.2L", customer: "Neha Gupta", time: "8 hours ago", isPositive: true },
+              { type: "disbursement", amount: "₹25,00,000", customer: "Meera Kapoor", time: "1 day ago", isPositive: true },
             ].map((activity, idx) => (
               <div key={idx} className="flex items-center justify-between border-b border-border pb-4 last:border-0 last:pb-0">
                 <div className="flex items-center gap-4">

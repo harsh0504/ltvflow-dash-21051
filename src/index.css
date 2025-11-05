@@ -124,12 +124,41 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-size: 14px;
+    line-height: 150%;
+  }
+
+  /* Typography Standards */
+  h1, h2, h3, h4, h5, h6 {
+    line-height: 120%;
+  }
+
+  /* Large headings (> 20px) get tighter letter spacing */
+  h1, h2, h3 {
+    letter-spacing: -0.02em;
+  }
+
+  /* Sub-headings */
+  h4, h5, h6 {
+    line-height: 135%;
+  }
+
+  /* Ensure minimum font size */
+  p, span, div, a, button, input, textarea, select {
+    font-size: max(14px, 1em);
   }
 }
 
 @layer components {
   .nav-active {
-    background-color: rgba(255, 255, 255, 0.1) !important;
-    color: white !important;
+    background-color: rgba(0, 204, 255, 0.2) !important;
+    color: #00CCFF !important;
+    font-weight: 600 !important;
+    border-left: 4px solid #00CCFF !important;
+    padding-left: calc(1rem - 4px) !important;
+  }
+
+  .nav-active svg {
+    color: #00CCFF !important;
   }
 }

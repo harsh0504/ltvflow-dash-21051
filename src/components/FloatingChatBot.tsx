@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,6 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Send, Bot, User, MessageCircle, X } from "lucide-react";
 import { getChatbotResponse } from "@/lib/chatbotHelper";
+import { floatingElement, scaleIn, springs } from "@/lib/animations";
 
 interface Message {
   id: number;
@@ -79,17 +81,37 @@ export function FloatingChatBot() {
   return (
     <>
       {/* Floating Action Button */}
-      <Button
-        onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 h-16 w-16 rounded-full shadow-strong bg-gradient-primary hover:opacity-90 transition-all hover:scale-110 z-50"
-        size="icon"
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={floatingElement}
+        transition={springs.gentle}
+        className="fixed bottom-6 right-6 z-50"
       >
-        <MessageCircle className="h-7 w-7" />
-      </Button>
+        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+          <Button
+            onClick={() => setIsOpen(!isOpen)}
+            className="h-16 w-16 rounded-full shadow-strong bg-gradient-primary hover:opacity-90"
+            size="icon"
+          >
+            <MessageCircle className="h-7 w-7" />
+          </Button>
+        </motion.div>
+      </motion.div>
 
       {/* Chat Card - positioned near FAB */}
-      {isOpen && (
-        <Card className="fixed bottom-24 right-6 w-96 h-[500px] shadow-strong z-50 flex flex-col">
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            variants={scaleIn}
+            transition={springs.default}
+            className="fixed bottom-24 right-6 z-50"
+            style={{ transformOrigin: "bottom right" }}
+          >
+            <Card className="w-96 h-[500px] shadow-strong flex flex-col">
           <CardHeader className="border-b border-border pb-4">
             <CardTitle className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -111,13 +133,18 @@ export function FloatingChatBot() {
           <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
             <ScrollArea className="flex-1 px-4">
               <div className="space-y-4 py-4">
-                {messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`flex gap-3 ${
-                      message.sender === "user" ? "flex-row-reverse" : "flex-row"
-                    }`}
-                  >
+                <AnimatePresence mode="popLayout">
+                  {messages.map((message) => (
+                    <motion.div
+                      key={message.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      transition={{ duration: 0.2 }}
+                      className={`flex gap-3 ${
+                        message.sender === "user" ? "flex-row-reverse" : "flex-row"
+                      }`}
+                    >
                     <Avatar className="h-8 w-8 flex-shrink-0">
                       <AvatarFallback className={
                         message.sender === "bot"
@@ -149,8 +176,9 @@ export function FloatingChatBot() {
                         {message.timestamp}
                       </span>
                     </div>
-                  </div>
-                ))}
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
               </div>
             </ScrollArea>
             <div className="border-t border-border p-4">
@@ -172,8 +200,10 @@ export function FloatingChatBot() {
               </div>
             </div>
           </CardContent>
-        </Card>
-      )}
+            </Card>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { FloatingChatBot } from "@/components/FloatingChatBot";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -271,28 +272,28 @@ const BusinessRules = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active':
-        return 'bg-green-500/10 text-green-700 border-green-500/20';
+        return 'bg-[#ECFDF5] text-[#059669]';
       case 'draft':
-        return 'bg-amber-500/10 text-amber-700 border-amber-500/20';
+        return 'bg-[#FFFBEB] text-[#D97706]';
       case 'inactive':
-        return 'bg-gray-500/10 text-gray-700 border-gray-500/20';
+        return 'bg-[#F3F4F6] text-[#374151]';
       default:
-        return 'bg-gray-500/10 text-gray-700 border-gray-500/20';
+        return 'bg-[#F3F4F6] text-[#374151]';
     }
   };
 
   const getActionColor = (action: string) => {
     switch (action) {
       case 'created':
-        return 'text-blue-600';
+        return 'bg-[#EEF2FF] text-[#4F46E5]';
       case 'updated':
-        return 'text-amber-600';
+        return 'bg-[#FFFBEB] text-[#D97706]';
       case 'activated':
-        return 'text-green-600';
+        return 'bg-[#ECFDF5] text-[#059669]';
       case 'deactivated':
-        return 'text-red-600';
+        return 'bg-[#FEF2F2] text-[#DC2626]';
       default:
-        return 'text-gray-600';
+        return 'bg-[#F3F4F6] text-[#374151]';
     }
   };
 
@@ -482,7 +483,7 @@ const BusinessRules = () => {
                     {rule.description}
                   </p>
                 </div>
-                <Badge className={`${getStatusColor(rule.status)} border`}>
+                <Badge className={`${getStatusColor(rule.status)} font-medium`}>
                   {rule.status}
                 </Badge>
               </div>
@@ -516,9 +517,9 @@ const BusinessRules = () => {
       <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="flex items-center justify-between">
+            <DialogTitle className="flex items-center gap-2 pr-8">
               <span>{selectedRule?.name}</span>
-              <Badge className={`${getStatusColor(selectedRule?.status || '')} border`}>
+              <Badge className={`${getStatusColor(selectedRule?.status || '')} font-medium flex-shrink-0`}>
                 {selectedRule?.status}
               </Badge>
             </DialogTitle>
@@ -637,18 +638,15 @@ const BusinessRules = () => {
                               : 'bg-red-500'
                           }`}
                         />
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <Badge
-                              variant="outline"
-                              className={`${getActionColor(entry.action)} text-xs capitalize`}
-                            >
-                              {entry.action}
-                            </Badge>
-                            <span className="text-sm text-muted-foreground">
-                              {entry.changes}
-                            </span>
-                          </div>
+                        <div className="space-y-2">
+                          <Badge
+                            className={`${getActionColor(entry.action)} font-medium text-xs capitalize`}
+                          >
+                            {entry.action}
+                          </Badge>
+                          <p className="text-sm font-medium text-primary">
+                            {entry.changes}
+                          </p>
                           <div className="flex items-center gap-4 text-xs text-muted-foreground">
                             <div className="flex items-center gap-1">
                               <User className="h-3 w-3" />
@@ -831,7 +829,7 @@ const BusinessRules = () => {
                             size="sm"
                             variant="ghost"
                             onClick={() => removeCondition(group.id, condition.id)}
-                            className="h-9 w-9 p-0 rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                            className="h-9 w-9 p-0 rounded-full text-muted-foreground hover:bg-gray-100"
                             disabled={group.conditions.length === 1 && groups.length === 1}
                           >
                             <Trash2 className="h-4 w-4" />
@@ -846,7 +844,7 @@ const BusinessRules = () => {
                     variant="ghost"
                     size="sm"
                     onClick={() => addCondition(groups[0].id)}
-                    className="text-primary hover:text-primary hover:bg-primary/5 h-9 px-0"
+                    className="text-foreground hover:bg-gray-100 h-9 px-0"
                   >
                     <Plus className="h-4 w-4 mr-1.5" />
                     Add condition
@@ -946,6 +944,9 @@ const BusinessRules = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Floating ChatBot */}
+      <FloatingChatBot />
     </div>
   );
 };
