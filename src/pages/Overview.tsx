@@ -1,4 +1,5 @@
 import { MetricCard } from "@/components/MetricCard";
+import { FloatingChatBot } from "@/components/FloatingChatBot";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   DollarSign,
@@ -200,6 +201,9 @@ const Overview = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Floating ChatBot */}
+      <FloatingChatBot />
     </div>
   );
 };
