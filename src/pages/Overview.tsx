@@ -2,13 +2,13 @@ import { MetricCard } from "@/components/MetricCard";
 import { FloatingChatBot } from "@/components/FloatingChatBot";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  DollarSign,
   Users,
   TrendingUp,
   AlertCircle,
   ArrowUpRight,
   ArrowDownRight,
 } from "lucide-react";
+import { RupeeIcon } from "@/components/RupeeIcon";
 import {
   LineChart,
   Line,
@@ -34,10 +34,14 @@ const disbursementData = [
 ];
 
 const riskData = [
-  { category: "0-30 Days", count: 45 },
-  { category: "31-60 Days", count: 12 },
-  { category: "61-90 Days", count: 5 },
-  { category: "90+ Days", count: 2 },
+  { category: "0-7 Days", count: 45 },
+  { category: "8-15 Days", count: 38 },
+  { category: "16-30 Days", count: 52 },
+  { category: "31-45 Days", count: 28 },
+  { category: "46-60 Days", count: 15 },
+  { category: "61-75 Days", count: 19 },
+  { category: "76-90 Days", count: 8 },
+  { category: "90+ Days", count: 12 },
 ];
 
 const Overview = () => {
@@ -56,7 +60,7 @@ const Overview = () => {
           title="Total Outstanding"
           value="₹124.5M"
           subtitle="Across 1,234 loans"
-          icon={DollarSign}
+          icon={RupeeIcon}
           trend={{ value: "12.5%", isPositive: true }}
         />
         <MetricCard
@@ -145,7 +149,7 @@ const Overview = () => {
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={riskData}>
+              <BarChart data={riskData} barSize={40}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                 <XAxis dataKey="category" stroke="hsl(var(--muted-foreground))" />
                 <YAxis stroke="hsl(var(--muted-foreground))" />
@@ -155,6 +159,7 @@ const Overview = () => {
                     border: "1px solid hsl(var(--border))",
                     borderRadius: "var(--radius)",
                   }}
+                  cursor={{ fill: 'hsl(var(--muted))' }}
                 />
                 <Bar dataKey="count" fill="hsl(var(--accent))" name="Number of Loans" radius={[8, 8, 0, 0]} />
               </BarChart>

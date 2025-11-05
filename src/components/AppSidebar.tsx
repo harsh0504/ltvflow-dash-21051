@@ -17,6 +17,7 @@ import {
   SidebarMenuItem,
   SidebarHeader,
 } from "@/components/ui/sidebar";
+import KotakLogo from "@/assets/Kotak Logo.svg";
 
 const menuItems = [
   {
@@ -51,8 +52,8 @@ export function AppSidebar() {
     <Sidebar className="border-r border-sidebar-border">
       <SidebarHeader className="border-b border-sidebar-border p-6">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-primary">
-            <TrendingUp className="h-6 w-6 text-sidebar-primary-foreground" />
+          <div className="flex h-10 w-10 items-center justify-center">
+            <img src={KotakLogo} alt="Kotak Logo" className="h-8 w-8" />
           </div>
           <div>
             <h2 className="text-lg font-semibold text-sidebar-foreground">LAS Dashboard</h2>
@@ -71,9 +72,10 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild>
                     <NavLink
                       to={item.url}
+                      end={item.url === "/"}
                       className={({ isActive }) =>
                         isActive
-                          ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                          ? "nav-active"
                           : "hover:bg-sidebar-accent/50 text-sidebar-foreground/80 hover:text-sidebar-foreground"
                       }
                     >

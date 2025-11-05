@@ -20,13 +20,13 @@ All colors MUST be HSL.
     --primary: 215 70% 25%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 180 50% 45%;
+    --secondary: 211 100% 23%;
     --secondary-foreground: 0 0% 100%;
 
     --muted: 210 15% 95%;
     --muted-foreground: 215 15% 50%;
 
-    --accent: 180 55% 50%;
+    --accent: 211 100% 23%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 72% 51%;
@@ -44,18 +44,18 @@ All colors MUST be HSL.
 
     --radius: 0.75rem;
 
-    --sidebar-background: 215 28% 17%;
+    --sidebar-background: 211 100% 23%;
     --sidebar-foreground: 210 20% 98%;
-    --sidebar-primary: 180 55% 50%;
+    --sidebar-primary: 211 100% 23%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 215 25% 22%;
+    --sidebar-accent: 211 80% 28%;
     --sidebar-accent-foreground: 210 20% 98%;
-    --sidebar-border: 215 20% 25%;
-    --sidebar-ring: 180 55% 50%;
+    --sidebar-border: 211 70% 30%;
+    --sidebar-ring: 211 100% 23%;
 
     /* Custom fintech design tokens */
-    --gradient-primary: linear-gradient(135deg, hsl(215 70% 25%) 0%, hsl(215 60% 35%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(180 55% 50%) 0%, hsl(180 60% 60%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(211 100% 23%) 0%, hsl(211 80% 30%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(211 100% 23%) 0%, hsl(211 80% 30%) 100%);
     --gradient-card: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(210 20% 99%) 100%);
     --shadow-soft: 0 2px 8px -2px hsl(215 25% 15% / 0.08);
     --shadow-medium: 0 4px 16px -4px hsl(215 25% 15% / 0.12);
@@ -73,8 +73,8 @@ All colors MUST be HSL.
     --popover: 215 28% 14%;
     --popover-foreground: 210 20% 98%;
 
-    --primary: 180 55% 50%;
-    --primary-foreground: 215 30% 10%;
+    --primary: 211 100% 23%;
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 215 25% 22%;
     --secondary-foreground: 210 20% 98%;
@@ -82,8 +82,8 @@ All colors MUST be HSL.
     --muted: 215 25% 18%;
     --muted-foreground: 215 15% 65%;
 
-    --accent: 180 55% 50%;
-    --accent-foreground: 215 30% 10%;
+    --accent: 211 100% 23%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62% 45%;
     --destructive-foreground: 0 0% 100%;
@@ -96,20 +96,20 @@ All colors MUST be HSL.
 
     --border: 215 25% 20%;
     --input: 215 25% 20%;
-    --ring: 180 55% 50%;
+    --ring: 211 100% 23%;
 
-    --sidebar-background: 215 28% 12%;
+    --sidebar-background: 211 100% 23%;
     --sidebar-foreground: 210 20% 98%;
-    --sidebar-primary: 180 55% 50%;
-    --sidebar-primary-foreground: 215 30% 10%;
-    --sidebar-accent: 215 25% 18%;
+    --sidebar-primary: 211 100% 23%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 211 80% 28%;
     --sidebar-accent-foreground: 210 20% 98%;
-    --sidebar-border: 215 20% 16%;
-    --sidebar-ring: 180 55% 50%;
+    --sidebar-border: 211 70% 30%;
+    --sidebar-ring: 211 100% 23%;
 
     /* Custom fintech design tokens - dark mode */
-    --gradient-primary: linear-gradient(135deg, hsl(180 55% 50%) 0%, hsl(180 60% 60%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(215 28% 17%) 0%, hsl(215 25% 22%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(211 100% 23%) 0%, hsl(211 80% 30%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(211 100% 23%) 0%, hsl(211 80% 30%) 100%);
     --gradient-card: linear-gradient(135deg, hsl(215 28% 14%) 0%, hsl(215 25% 16%) 100%);
     --shadow-soft: 0 2px 8px -2px hsl(0 0% 0% / 0.3);
     --shadow-medium: 0 4px 16px -4px hsl(0 0% 0% / 0.4);
@@ -124,5 +124,12 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .nav-active {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
   }
 }

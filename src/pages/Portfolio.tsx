@@ -4,13 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
-  DollarSign,
   TrendingUp,
   PieChart as PieChartIcon,
   Download,
   Search,
   AlertTriangle,
 } from "lucide-react";
+import { RupeeIcon } from "@/components/RupeeIcon";
 import {
   PieChart,
   Pie,
@@ -58,7 +58,7 @@ const Portfolio = () => {
           title="Total Portfolio Value"
           value="₹342.5M"
           subtitle="Across all assets"
-          icon={DollarSign}
+          icon={RupeeIcon}
           trend={{ value: "5.2%", isPositive: true }}
         />
         <MetricCard

@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
-  DollarSign,
   TrendingUp,
   Calendar,
   Bell,
@@ -14,6 +13,7 @@ import {
   Unlock,
   ArrowUpCircle,
 } from "lucide-react";
+import { RupeeIcon } from "@/components/RupeeIcon";
 import {
   LineChart,
   Line,
@@ -57,7 +57,7 @@ const Customer = () => {
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Loan Amount
             </CardTitle>
-            <DollarSign className="h-4 w-4 text-primary" />
+            <RupeeIcon className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-foreground">₹20,00,000</div>
