@@ -28,7 +28,7 @@ export function ChatBot() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
-      text: "Welcome to LAS Dashboard! I'm your AI assistant. Ask me about your loans, portfolio, or risk alerts.",
+      text: "Welcome to LAS Dashboard. I'm your AI assistant. Ask me about your loans, portfolio, or risk alerts.",
       sender: "bot",
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }

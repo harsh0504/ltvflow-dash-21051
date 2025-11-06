@@ -32,15 +32,119 @@ const assetComposition = [
 ];
 
 const assets = [
-  { isin: "INE002A01018", name: "Reliance Industries", type: "Equity", value: "₹12,50,000", pledged: "₹10,00,000", ltv: "65%", movement: "+2.3%", status: "Healthy" },
-  { isin: "INE040A01034", name: "HDFC Bank", type: "Equity", value: "₹8,75,000", pledged: "₹7,00,000", ltv: "68%", movement: "+1.8%", status: "Healthy" },
-  { isin: "MF12345678", name: "SBI Bluechip Fund", type: "Mutual Fund", value: "₹5,60,000", pledged: "₹4,50,000", ltv: "72%", movement: "-0.5%", status: "At-risk" },
-  { isin: "INE467B01029", name: "TCS Limited", type: "Equity", value: "₹9,20,000", pledged: "₹7,35,000", ltv: "64%", movement: "+3.1%", status: "Healthy" },
-  { isin: "INE009A01021", name: "Infosys", type: "Equity", value: "₹6,40,000", pledged: "₹5,10,000", ltv: "69%", movement: "+1.2%", status: "Healthy" },
+  {
+    isin: "INE002A01018",
+    name: "Reliance Industries",
+    type: "Equity",
+    value: "₹8,55,000",
+    valueNumeric: 855000,
+    pledged: "₹6,85,000",
+    pledgedNumeric: 6850000,
+    outstanding: "₹3,08,250",
+    outstandingNumeric: 3082500,
+    ltv: "45.0%",
+    movement: "+2.3%",
+    status: "Healthy",
+  },
+  {
+    isin: "INE040A01034",
+    name: "HDFC Bank",
+    type: "Equity",
+    value: "₹8,75,000",
+    valueNumeric: 875000,
+    pledged: "₹7,00,000",
+    pledgedNumeric: 7000000,
+    outstanding: "₹3,15,000",
+    outstandingNumeric: 3150000,
+    ltv: "45.0%",
+    movement: "+1.2%",
+    status: "Healthy",
+  },
+  {
+    isin: "MF12345678",
+    name: "SBI Bluechip Fund",
+    type: "Mutual Fund",
+    value: "₹9,00,000",
+    valueNumeric: 900000,
+    pledged: "₹7,20,000",
+    pledgedNumeric: 7200000,
+    outstanding: "₹3,24,000",
+    outstandingNumeric: 3240000,
+    ltv: "45.0%",
+    movement: "+0.8%",
+    status: "Healthy",
+  },
+  {
+    isin: "INE467B01029",
+    name: "TCS Limited",
+    type: "Equity",
+    value: "₹8,65,000",
+    valueNumeric: 865000,
+    pledged: "₹6,92,000",
+    pledgedNumeric: 6920000,
+    outstanding: "₹3,11,400",
+    outstandingNumeric: 3114000,
+    ltv: "45.0%",
+    movement: "+3.1%",
+    status: "Healthy",
+  },
+  {
+    isin: "INE009A01021",
+    name: "Infosys",
+    type: "Equity",
+    value: "₹8,80,000",
+    valueNumeric: 880000,
+    pledged: "₹7,04,000",
+    pledgedNumeric: 7040000,
+    outstanding: "₹3,16,800",
+    outstandingNumeric: 3168000,
+    ltv: "45.0%",
+    movement: "+1.2%",
+    status: "Healthy",
+  },
 ];
 
 const Portfolio = () => {
-  const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, name, value, fill }: any) => {
+  // Calculate portfolio metrics based on formula: Total Outstanding / Pledged Value = Average LTV
+  const totalOutstanding = assets.reduce((sum, asset) => sum + asset.outstandingNumeric, 0);
+  const totalPledged = assets.reduce((sum, asset) => sum + asset.pledgedNumeric, 0);
+  const averageLTV = ((totalOutstanding / totalPledged) * 100).toFixed(1);
+
+  // Calculate at-risk assets (LTV > 50%) as percentage
+  const atRiskCount = assets.filter(asset => parseFloat(asset.ltv) > 50).length;
+  const atRiskPercentage = ((atRiskCount / assets.length) * 100).toFixed(1);
+
+  // Calculate portfolio concentration risk (highest single asset percentage)
+  const totalMarketValue = assets.reduce((sum, asset) => sum + asset.valueNumeric, 0);
+  const concentrations = assets.map(asset => (asset.valueNumeric / totalMarketValue) * 100);
+  const maxConcentration = Math.max(...concentrations).toFixed(1);
+
+  // Format total outstanding
+  const totalOutstandingFormatted = new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 1,
+  }).format(totalOutstanding / 10000000) + "M";
+
+  // Format total pledged
+  const totalPledgedFormatted = new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 1,
+  }).format(totalPledged / 10000000) + "M";
+
+  const pledgedPercentage = ((totalPledged / (totalOutstanding + totalPledged)) * 100).toFixed(1);
+
+  const renderCustomLabel = ({
+    cx,
+    cy,
+    midAngle,
+    innerRadius,
+    outerRadius,
+    name,
+    value,
+    fill,
+  }: any) => {
     const RADIAN = Math.PI / 180;
     const radius = outerRadius + 25;
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
@@ -51,9 +155,9 @@ const Portfolio = () => {
         x={x}
         y={y}
         fill={fill}
-        textAnchor={x > cx ? 'start' : 'end'}
+        textAnchor={x > cx ? "start" : "end"}
         dominantBaseline="central"
-        style={{ fontWeight: 500, fontSize: '14px' }}
+        style={{ fontWeight: 500, fontSize: "14px" }}
       >
         {`${name}: ${value}%`}
       </text>
@@ -80,7 +184,9 @@ const Portfolio = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Portfolio Metrics</h1>
+          <h1 className="text-3xl font-bold text-foreground">
+            Portfolio Metrics
+          </h1>
           <p className="text-muted-foreground mt-1">
             Analyze asset composition and portfolio health
           </p>
@@ -92,31 +198,37 @@ const Portfolio = () => {
       </div>
 
       {/* Key Portfolio Metrics */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
         <MetricCard
-          title="Total Portfolio Value"
-          value="₹342.5M"
+          title="Total Outstanding Exposure"
+          value={totalOutstandingFormatted}
           subtitle="Across all assets"
           icon={RupeeIcon}
           trend={{ value: "5.2%", isPositive: true }}
         />
         <MetricCard
           title="Pledged Value"
-          value="₹218.6M"
-          subtitle="63.8% of portfolio"
+          value={totalPledgedFormatted}
+          subtitle={`${pledgedPercentage}% of total exposure`}
           icon={TrendingUp}
         />
         <MetricCard
           title="Average LTV"
-          value="66.4%"
-          subtitle="Portfolio average"
+          value={`${averageLTV}%`}
+          subtitle="Outstanding / Pledged Value"
           icon={PieChartIcon}
         />
         <MetricCard
           title="At-Risk Assets"
-          value="23"
-          subtitle="LTV > 70%"
+          value={`${atRiskPercentage}%`}
+          subtitle="LTV > 50%"
           icon={AlertTriangle}
+        />
+        <MetricCard
+          title="Portfolio Concentration Risk"
+          value={`${maxConcentration}%`}
+          subtitle="Max single asset exposure"
+          icon={PieChartIcon}
         />
       </div>
 
@@ -163,8 +275,12 @@ const Portfolio = () => {
               ].map((holding, idx) => (
                 <div key={idx} className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="font-medium text-foreground">{holding.name}</span>
-                    <span className="text-muted-foreground">{holding.amount}</span>
+                    <span className="font-medium text-foreground">
+                      {holding.name}
+                    </span>
+                    <span className="text-muted-foreground">
+                      {holding.amount}
+                    </span>
                   </div>
                   <div className="h-2 w-full rounded-full bg-gray-200 overflow-hidden">
                     <div
@@ -214,36 +330,84 @@ const Portfolio = () => {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-border">
-                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">ISIN</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Asset Name</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Type</th>
-                  <th className="text-right py-3 px-4 text-sm font-medium text-muted-foreground">Market Value</th>
-                  <th className="text-right py-3 px-4 text-sm font-medium text-muted-foreground">Pledged</th>
-                  <th className="text-right py-3 px-4 text-sm font-medium text-muted-foreground">LTV</th>
-                  <th className="text-right py-3 px-4 text-sm font-medium text-muted-foreground">Movement</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Status</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                    ISIN
+                  </th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                    Asset Name
+                  </th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                    Type
+                  </th>
+                  <th className="text-right py-3 px-4 text-sm font-medium text-muted-foreground">
+                    Market Value
+                  </th>
+                  <th className="text-right py-3 px-4 text-sm font-medium text-muted-foreground">
+                    Pledged Value
+                  </th>
+                  <th className="text-right py-3 px-4 text-sm font-medium text-muted-foreground">
+                    Outstanding
+                  </th>
+                  <th className="text-right py-3 px-4 text-sm font-medium text-muted-foreground">
+                    LTV
+                  </th>
+                  <th className="text-right py-3 px-4 text-sm font-medium text-muted-foreground">
+                    Movement
+                  </th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                    Status
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {assets.map((asset, idx) => (
-                  <tr key={idx} className="border-b border-border hover:bg-muted/30 transition-colors">
-                    <td className="py-3 px-4 text-sm font-mono text-muted-foreground">{asset.isin}</td>
-                    <td className="py-3 px-4 text-sm font-medium text-foreground">{asset.name}</td>
-                    <td className="py-3 px-4 text-sm text-muted-foreground">{asset.type}</td>
-                    <td className="py-3 px-4 text-sm text-right font-medium text-foreground">{asset.value}</td>
-                    <td className="py-3 px-4 text-sm text-right text-muted-foreground">{asset.pledged}</td>
+                  <tr
+                    key={idx}
+                    className="border-b border-border hover:bg-muted/30 transition-colors"
+                  >
+                    <td className="py-3 px-4 text-sm font-mono text-muted-foreground">
+                      {asset.isin}
+                    </td>
+                    <td className="py-3 px-4 text-sm font-medium text-foreground">
+                      {asset.name}
+                    </td>
+                    <td className="py-3 px-4 text-sm text-muted-foreground">
+                      {asset.type}
+                    </td>
+                    <td className="py-3 px-4 text-sm text-right font-medium text-foreground">
+                      {asset.value}
+                    </td>
+                    <td className="py-3 px-4 text-sm text-right text-muted-foreground">
+                      {asset.pledged}
+                    </td>
+                    <td className="py-3 px-4 text-sm text-right font-semibold text-foreground">
+                      {asset.outstanding}
+                    </td>
                     <td className="py-3 px-4 text-sm text-right">
-                      <Badge className={`${getLtvBadgeColor(asset.ltv, asset.status)} font-medium`}>
+                      <Badge
+                        className={`${getLtvBadgeColor(
+                          asset.ltv,
+                          asset.status
+                        )} font-medium`}
+                      >
                         {asset.ltv}
                       </Badge>
                     </td>
-                    <td className={`py-3 px-4 text-sm text-right font-medium ${
-                      asset.movement.startsWith("+") ? "text-success" : "text-destructive"
-                    }`}>
+                    <td
+                      className={`py-3 px-4 text-sm text-right font-medium ${
+                        asset.movement.startsWith("+")
+                          ? "text-success"
+                          : "text-destructive"
+                      }`}
+                    >
                       {asset.movement}
                     </td>
                     <td className="py-3 px-4 text-sm">
-                      <Badge className={`${getStatusBadgeColor(asset.status)} font-medium`}>
+                      <Badge
+                        className={`${getStatusBadgeColor(
+                          asset.status
+                        )} font-medium`}
+                      >
                         {asset.status}
                       </Badge>
                     </td>

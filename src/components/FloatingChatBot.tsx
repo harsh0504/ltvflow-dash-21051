@@ -21,7 +21,7 @@ export function FloatingChatBot() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
-      text: "Welcome to LAS Dashboard! I'm your AI assistant with full access to your dashboard data. Ask me about your loans, portfolio, risk alerts, collateral, or anything else!\n\nTry asking: \"What's my loan status?\" or \"Show portfolio breakdown\"",
+      text: "Welcome to LAS Dashboard. I'm your AI assistant with full access to your dashboard data. I can help you with information about loans, portfolio metrics, risk alerts, collateral, and more.\n\nTry asking: \"What's my loan status?\" or \"Show portfolio breakdown\"",
       sender: "bot",
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }

@@ -1,4 +1,5 @@
 import { dashboardData } from "./dashboardData";
+import { mockCustomers, getPortfolioMetrics } from "@/data/mockData";
 
 // Intelligent chatbot response generator based on dashboard context
 export function getChatbotResponse(userInput: string): string {
@@ -21,12 +22,12 @@ What would you like to know?`;
   if (input.includes("help") || input === "?") {
     return `I can help you with:
 
-📊 **Overview**: Total outstanding, active loans, portfolio yield, NPA rate
-💼 **Portfolio**: Asset composition, top holdings, LTV ratios
-⚠️ **Risk**: Critical events, alerts, pending actions
-💰 **Loan Details**: Your loan status, EMI, outstanding balance
-🏦 **Collateral**: Pledged assets, market values, breakdown
-📈 **Trends**: Disbursement patterns, repayment trends
+**Overview**: Total outstanding, active loans, portfolio yield, NPA rate
+**Portfolio**: Asset composition, top holdings, LTV ratios
+**Risk**: Critical events, alerts, pending actions
+**Loan Details**: Your loan status, EMI, outstanding balance
+**Collateral**: Pledged assets, market values, breakdown
+**Trends**: Disbursement patterns, repayment trends
 
 Try asking specific questions like:
 - "What's my loan status?"
@@ -44,10 +45,10 @@ Try asking specific questions like:
 
     return `**Your Loan Status:**
 
-✅ Status: ${status}
-💵 Original Amount: ${loan.value} (disbursed on ${loan.disbursedDate})
-📊 Outstanding Balance: ${balance.value} (${balance.percentage}% remaining)
-📅 Next EMI: ${emi.amount} due on ${emi.dueDate}
+Status: ${status}
+Original Amount: ${loan.value} (disbursed on ${loan.disbursedDate})
+Outstanding Balance: ${balance.value} (${balance.percentage}% remaining)
+Next EMI: ${emi.amount} due on ${emi.dueDate}
 
 Your account is in good standing with all payments on time.`;
   }
@@ -59,10 +60,10 @@ Your account is in good standing with all payments on time.`;
 
     return `**Portfolio Overview:**
 
-💰 Total Value: ${portfolio.totalValue.value} (${portfolio.totalValue.trend.isPositive ? '+' : ''}${portfolio.totalValue.trend.value})
-🔒 Pledged: ${portfolio.pledgedValue.value} (${portfolio.pledgedValue.percentage})
-📊 Average LTV: ${portfolio.averageLTV.value}
-⚠️ At-Risk Assets: ${portfolio.atRiskAssets.value} (${portfolio.atRiskAssets.subtitle})
+Total Value: ${portfolio.totalValue.value} (${portfolio.totalValue.trend.isPositive ? '+' : ''}${portfolio.totalValue.trend.value})
+Pledged: ${portfolio.pledgedValue.value} (${portfolio.pledgedValue.percentage})
+Average LTV: ${portfolio.averageLTV.value}
+At-Risk Assets: ${portfolio.atRiskAssets.value} (${portfolio.atRiskAssets.subtitle})
 
 **Asset Breakdown:**
 ${composition.map(asset => `• ${asset.name}: ${asset.value}%`).join('\n')}
@@ -79,11 +80,11 @@ ${portfolio.topHoldings.slice(0, 3).map((h, i) => `${i + 1}. ${h.name}: ${h.amou
 
     return `**LTV Information:**
 
-📊 Your Current LTV: ${ltv}
-📈 Portfolio Average LTV: ${avgLTV}
-⚠️ At-Risk Assets (LTV > 70%): ${atRisk}
+Your Current LTV: ${ltv}
+Portfolio Average LTV: ${avgLTV}
+At-Risk Assets (LTV > 70%): ${atRisk}
 
-Your LTV is in the **safe zone** (0-60%). The recommended maximum is 70%. You're well within safe limits!`;
+Your LTV is in the safe zone (0-60%). The recommended maximum is 70%. You're well within safe limits.`;
   }
 
   // Collateral
@@ -92,16 +93,16 @@ Your LTV is in the **safe zone** (0-60%). The recommended maximum is 70%. You're
 
     return `**Collateral Summary:**
 
-💎 Pledged Value: ${collateral.pledgedValue}
-💹 Current Market Value: ${collateral.marketValue}
-📊 Current LTV: ${collateral.currentLTV}
+Pledged Value: ${collateral.pledgedValue}
+Current Market Value: ${collateral.marketValue}
+Current LTV: ${collateral.currentLTV}
 
 **Breakdown:**
 • Equities: ${collateral.breakdown.equities.value} (${collateral.breakdown.equities.percentage}%)
 • Mutual Funds: ${collateral.breakdown.mutualFunds.value} (${collateral.breakdown.mutualFunds.percentage}%)
 • Bonds: ${collateral.breakdown.bonds.value} (${collateral.breakdown.bonds.percentage}%)
 
-Status: ✅ Healthy - Your collateral value is strong!`;
+Status: Healthy - Your collateral value is strong.`;
   }
 
   // Risk queries
@@ -111,9 +112,9 @@ Status: ✅ Healthy - Your collateral value is strong!`;
 
     return `**Risk Dashboard:**
 
-🔴 Critical Events: ${risk.criticalEvents}
-🟡 High Priority Alerts: ${risk.highPriorityAlerts}
-⏳ Pending Actions: ${risk.pendingActions}
+Critical Events: ${risk.criticalEvents}
+High Priority Alerts: ${risk.highPriorityAlerts}
+Pending Actions: ${risk.pendingActions}
 
 **Recent Critical Events:**
 ${criticalEvents.length > 0
@@ -131,11 +132,11 @@ ${risk.criticalEvents > 0 ? 'Please review the Risk Management page for immediat
 
     return `**EMI Information:**
 
-📅 Next EMI: ${emi.amount}
-📆 Due Date: ${emi.dueDate}
-✅ Last Payment: ${lastPayment?.amount} on ${lastPayment?.date}
+Next EMI: ${emi.amount}
+Due Date: ${emi.dueDate}
+Last Payment: ${lastPayment?.amount} on ${lastPayment?.date}
 
-All previous EMIs paid on time. Your payment history is excellent! 🌟`;
+All previous EMIs paid on time. Your payment history is excellent.`;
   }
 
   // Recent Activity
@@ -145,7 +146,7 @@ All previous EMIs paid on time. Your payment history is excellent! 🌟`;
     return `**Recent Activity:**
 
 ${activity.map(a =>
-  `${a.isPositive ? '✅' : '⚠️'} ${a.customer}: ${a.type.toUpperCase()} - ${a.amount} (${a.time})`
+  `${a.customer}: ${a.type.toUpperCase()} - ${a.amount} (${a.time})`
 ).join('\n')}
 
 Would you like details on any specific transaction?`;
@@ -159,11 +160,11 @@ Would you like details on any specific transaction?`;
 
     return `**Outstanding Balance:**
 
-💰 Current Balance: ${balance.value}
-📊 Progress: ${balance.percentage}% remaining
-✅ Already Paid: ₹${(paid / 100000).toFixed(2)}L
+Current Balance: ${balance.value}
+Progress: ${balance.percentage}% remaining
+Already Paid: ₹${(paid / 100000).toFixed(2)}L
 
-You've repaid ${(100 - balance.percentage).toFixed(2)}% of your loan. Keep up the great work! 🎯`;
+You've repaid ${(100 - balance.percentage).toFixed(2)}% of your loan. Keep up the great work.`;
   }
 
   // Metrics / Overview
@@ -172,12 +173,12 @@ You've repaid ${(100 - balance.percentage).toFixed(2)}% of your loan. Keep up th
 
     return `**Dashboard Overview:**
 
-💼 Total Outstanding: ${overview.totalOutstanding.value} (${overview.totalOutstanding.trend.isPositive ? '+' : ''}${overview.totalOutstanding.trend.value})
-👥 Active Loans: ${overview.activeLoans.value} (${overview.activeLoans.subtitle})
-📈 Portfolio Yield: ${overview.portfolioYield.value} (${overview.portfolioYield.subtitle})
-⚠️ NPA Rate: ${overview.npaRate.value} (${overview.npaRate.subtitle})
+Total Outstanding: ${overview.totalOutstanding.value} (${overview.totalOutstanding.trend.isPositive ? '+' : ''}${overview.totalOutstanding.trend.value})
+Active Loans: ${overview.activeLoans.value} (${overview.activeLoans.subtitle})
+Portfolio Yield: ${overview.portfolioYield.value} (${overview.portfolioYield.subtitle})
+NPA Rate: ${overview.npaRate.value} (${overview.npaRate.subtitle})
 
-Overall, the portfolio is performing well with strong growth indicators! 📊`;
+Overall, the portfolio is performing well with strong growth indicators.`;
   }
 
   // Top holdings
@@ -198,13 +199,13 @@ These assets represent your largest investments and contribute most to your port
 
     return `**Disbursement Trends (Last 6 Months):**
 
-📈 Latest Month (${latest.month}):
+Latest Month (${latest.month}):
    • Disbursed: ₹${latest.disbursed / 100}L
    • Repaid: ₹${latest.repaid / 100}L
 
-📊 Growth: From ₹${firstMonth.disbursed / 100}L in ${firstMonth.month} to ₹${latest.disbursed / 100}L in ${latest.month}
+Growth: From ₹${firstMonth.disbursed / 100}L in ${firstMonth.month} to ₹${latest.disbursed / 100}L in ${latest.month}
 
-The portfolio shows consistent growth with healthy repayment rates! 🚀`;
+The portfolio shows consistent growth with healthy repayment rates.`;
   }
 
   // DPD / Overdue
@@ -216,28 +217,66 @@ The portfolio shows consistent growth with healthy repayment rates! 🚀`;
 
 ${dpd.map(d => `${d.category}: ${d.count} loans`).join('\n')}
 
-📊 Total loans with DPD: ${total}
-✅ Most are in early stages (0-30 days): ${dpd[0].count} loans
+Total loans with DPD: ${total}
+Most are in early stages (0-30 days): ${dpd[0].count} loans
 
 The portfolio maintains good payment discipline overall.`;
   }
 
-  // Specific customers
-  const customerMatch = input.match(/rajesh|priya|amit|neha|vikram/i);
+  // Specific customers - search in mockCustomers
+  const customerMatch = input.match(/rajesh|priya|amit|sneha|vikram|ananya|arjun|meera/i);
   if (customerMatch) {
-    const name = customerMatch[0].charAt(0).toUpperCase() + customerMatch[0].slice(1).toLowerCase();
-    const activity = dashboardData.recentActivity.find(a => a.customer.includes(name));
-    const riskEvent = dashboardData.risk.events.find(e => e.customer.includes(name));
+    const searchName = customerMatch[0];
+    const customer = mockCustomers.find(c => c.name.toLowerCase().includes(searchName.toLowerCase()));
 
-    if (activity || riskEvent) {
-      let response = `**Information about ${name}:**\n\n`;
-      if (activity) {
-        response += `Recent Activity: ${activity.type} - ${activity.amount} (${activity.time})\n`;
-      }
-      if (riskEvent) {
-        response += `Risk Event: ${riskEvent.type} - Severity: ${riskEvent.severity}, Status: ${riskEvent.status}`;
-      }
-      return response;
+    if (customer) {
+      return `**Customer Information: ${customer.name}**
+
+Customer ID: ${customer.id}
+Loan Amount: ${customer.loanAmount}
+Outstanding Balance: ${customer.outstandingBalance}
+LTV: ${customer.ltv}
+Status: ${customer.status}
+Risk Category: ${customer.riskCategory}
+Next Payment: ${customer.nextPayment} (Due: ${new Date(customer.dueDate).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })})
+Interest Rate: ${customer.interestRate}%
+Tenure: ${customer.tenure} months
+
+The customer account is ${customer.status.toLowerCase()}.`;
+    }
+  }
+
+  // Customer list queries
+  if (input.match(/how many customers|total customers|customer count|list customers|all customers/)) {
+    const metrics = getPortfolioMetrics();
+    const atRisk = mockCustomers.filter(c => c.status === "At Risk").length;
+
+    return `**Customer Summary:**
+
+Total Customers: ${metrics.totalCustomers}
+Active Customers: ${metrics.activeCustomers}
+At-Risk Customers: ${atRisk}
+
+Total Outstanding: ${metrics.totalOutstanding}
+Total Loan Amount: ${metrics.totalLoanAmount}
+
+Would you like details about any specific customer?`;
+  }
+
+  // At-risk customers
+  if (input.match(/at risk|risky|problem|high risk/)) {
+    const atRiskCustomers = mockCustomers.filter(c => c.status === "At Risk" || c.riskCategory === "High Risk");
+
+    if (atRiskCustomers.length > 0) {
+      return `**At-Risk Customers:**
+
+${atRiskCustomers.map(c =>
+  `• ${c.name} (${c.id}): LTV ${c.ltv}, Outstanding ${c.outstandingBalance}, Status: ${c.status}`
+).join('\n')}
+
+These customers require immediate attention.`;
+    } else {
+      return "No customers are currently at risk. All accounts are in good standing.";
     }
   }
 

@@ -31,7 +31,7 @@ const menuItems = [
     icon: TrendingUp,
   },
   {
-    title: "Risk Management",
+    title: "Collateral Risk Managment",
     url: "/risk",
     icon: AlertTriangle,
   },
@@ -41,7 +41,7 @@ const menuItems = [
     icon: User,
   },
   {
-    title: "Customer Portfolio Manager",
+    title: "Customer Relationship Manager",
     url: "/customer-portfolio",
     icon: Users,
   },
@@ -54,7 +54,7 @@ export function AppSidebar() {
     <aside
       className="h-screen flex-shrink-0 bg-sidebar text-sidebar-foreground border-r border-sidebar-border flex flex-col transition-all duration-300"
       style={{
-        width: isCollapsed ? '80px' : '256px',
+        width: isCollapsed ? "80px" : "280px",
       }}
     >
       <div className="border-b border-sidebar-border p-6 relative">
@@ -105,7 +105,9 @@ export function AppSidebar() {
                 transition={{ duration: 0.2 }}
                 className="px-2 mb-2"
               >
-                <div className="text-xs font-medium text-sidebar-foreground/70">Main Menu</div>
+                <div className="text-xs font-medium text-sidebar-foreground/70">
+                  Main Menu
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
@@ -132,7 +134,7 @@ export function AppSidebar() {
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -10 }}
                         transition={{ duration: 0.2 }}
-                        className="whitespace-nowrap"
+                        className="leading-tight"
                       >
                         {item.title}
                       </motion.span>

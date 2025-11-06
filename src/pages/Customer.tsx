@@ -1,8 +1,19 @@
+import { useState } from "react";
 import { FloatingChatBot } from "@/components/FloatingChatBot";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   TrendingUp,
   Calendar,
@@ -14,6 +25,8 @@ import {
   Unlock,
   ArrowUpCircle,
   XCircle,
+  Zap,
+  RefreshCw,
 } from "lucide-react";
 import { RupeeIcon } from "@/components/RupeeIcon";
 import {
@@ -42,28 +55,76 @@ const collateralData = [
 ];
 
 const Customer = () => {
+  // State for OTP modal and drawing power
+  const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
+  const [otpInput, setOtpInput] = useState("");
+  const [generatedOtp] = useState("123456"); // Hardcoded OTP
+  const [currentDrawingPower, setCurrentDrawingPower] = useState(
+    customer.marketValueNumeric * 0.5
+  );
+  const [lastUpdatedTime, setLastUpdatedTime] = useState(new Date());
+
   const paidAmount = customer.loanAmountNumeric - customer.outstandingNumeric;
   const repaidPercentage = (paidAmount / customer.loanAmountNumeric) * 100;
-  const disbursedDate = new Date(customer.disbursedDate).toLocaleDateString('en-IN', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric'
+  const disbursedDate = new Date(customer.disbursedDate).toLocaleDateString(
+    "en-IN",
+    {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }
+  );
+  const dueDate = new Date(customer.dueDate).toLocaleDateString("en-IN", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
   });
-  const dueDate = new Date(customer.dueDate).toLocaleDateString('en-IN', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric'
+
+  // Format Drawing Power
+  const drawingPower = new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  }).format(currentDrawingPower);
+
+  // Last updated timestamp
+  const lastUpdated = lastUpdatedTime.toLocaleDateString("en-IN", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   });
+
+  const handleRefresh = () => {
+    setIsOtpModalOpen(true);
+  };
+
+  const handleOtpSubmit = () => {
+    if (otpInput === generatedOtp) {
+      // Generate new random drawing power (between 40% and 60% of market value)
+      const randomPercentage = 0.4 + Math.random() * 0.2;
+      const newDrawingPower = customer.marketValueNumeric * randomPercentage;
+      setCurrentDrawingPower(newDrawingPower);
+      setLastUpdatedTime(new Date());
+      setIsOtpModalOpen(false);
+      setOtpInput("");
+    } else {
+      alert("Invalid OTP. Please try again.");
+    }
+  };
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-foreground">Customer Portal</h1>
-        <p className="text-muted-foreground mt-1">Welcome back {customer.name.split(' ')[0]},</p>
+        <p className="text-muted-foreground mt-1">
+          Welcome back {customer.name.split(" ")[0]},
+        </p>
       </div>
 
       {/* Loan Summary Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
         <Card className="shadow-soft hover:shadow-medium transition-all">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -74,7 +135,9 @@ const Customer = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground">{customer.loanAmount}</div>
+            <div className="text-2xl font-bold text-foreground">
+              {customer.loanAmount}
+            </div>
             <p className="text-xs text-muted-foreground mt-1">
               Disbursed on {disbursedDate}
             </p>
@@ -91,7 +154,9 @@ const Customer = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground">{customer.outstandingBalance}</div>
+            <div className="text-2xl font-bold text-foreground">
+              {customer.outstandingBalance}
+            </div>
             <div className="mt-2">
               <div className="relative h-2 w-full rounded-full bg-gray-200 overflow-hidden">
                 <div
@@ -101,7 +166,8 @@ const Customer = () => {
               </div>
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              {repaidPercentage.toFixed(1)}% repaid • {customer.outstandingBalance} remaining
+              {repaidPercentage.toFixed(1)}% repaid •{" "}
+              {customer.outstandingBalance} remaining
             </p>
           </CardContent>
         </Card>
@@ -109,17 +175,20 @@ const Customer = () => {
         <Card className="shadow-soft hover:shadow-medium transition-all">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Amount to be Paid
+              Last Bill
             </CardTitle>
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gray-100">
               <Calendar className="h-4 w-4 text-gray-500" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground">{customer.nextPayment}</div>
+            <div className="text-2xl font-bold text-foreground">
+              {customer.nextPayment}
+            </div>
             <p className="text-xs text-muted-foreground mt-1">
               Due on {dueDate}
             </p>
+            <p className="text-xs text-muted-foreground mt-1">@8.5% intrest</p>
           </CardContent>
         </Card>
 
@@ -133,11 +202,47 @@ const Customer = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <Badge className={`font-medium ${customer.status === "Active" ? "bg-[#ECFDF5] text-[#059669]" : "bg-[#FEF2F2] text-[#DC2626]"}`}>
+            <Badge
+              className={`font-medium ${
+                customer.status === "Active"
+                  ? "bg-[#ECFDF5] text-[#059669]"
+                  : "bg-[#FEF2F2] text-[#DC2626]"
+              }`}
+            >
               {customer.status}
             </Badge>
             <p className="text-xs text-muted-foreground mt-2">
               All payments on time
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-soft hover:shadow-medium transition-all lg:col-span-2">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Drawing Power
+            </CardTitle>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={handleRefresh}
+              >
+                <RefreshCw className="h-4 w-4 text-purple-500 hover:text-purple-700 transition-colors" />
+              </Button>
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-purple-100">
+                <Zap className="h-4 w-4 text-purple-600" />
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-foreground mb-2">
+              {drawingPower}
+            </div>
+            <p className="text-xs text-muted-foreground">50% of market value</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Last updated on {lastUpdated}
             </p>
           </CardContent>
         </Card>
@@ -149,8 +254,20 @@ const Customer = () => {
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle>Collateral Summary</CardTitle>
-              <Badge className={`font-medium ${customer.ltvNumeric <= 60 ? "bg-[#ECFDF5] text-[#059669]" : customer.ltvNumeric <= 70 ? "bg-[#FFFBEB] text-[#D97706]" : "bg-[#FEF2F2] text-[#DC2626]"}`}>
-                {customer.ltvNumeric <= 60 ? "Healthy" : customer.ltvNumeric <= 70 ? "Caution" : "At Risk"}
+              <Badge
+                className={`font-medium ${
+                  customer.ltvNumeric <= 60
+                    ? "bg-[#ECFDF5] text-[#059669]"
+                    : customer.ltvNumeric <= 70
+                    ? "bg-[#FFFBEB] text-[#D97706]"
+                    : "bg-[#FEF2F2] text-[#DC2626]"
+                }`}
+              >
+                {customer.ltvNumeric <= 60
+                  ? "Healthy"
+                  : customer.ltvNumeric <= 70
+                  ? "Caution"
+                  : "At Risk"}
               </Badge>
             </div>
           </CardHeader>
@@ -175,7 +292,9 @@ const Customer = () => {
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Current LTV</span>
-                <span className="font-semibold text-foreground">{customer.ltv}</span>
+                <span className="font-semibold text-foreground">
+                  {customer.ltv}
+                </span>
               </div>
               <div className="relative h-8 w-full rounded-full bg-muted overflow-hidden">
                 <div className="absolute inset-0 flex">
@@ -280,68 +399,49 @@ const Customer = () => {
         </CardHeader>
         <CardContent>
           <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-5">
-            <Button
-              variant="outline"
-              className="justify-start h-auto py-4"
-            >
+            <Button variant="outline" className="justify-start h-auto py-4">
               <CreditCard className="mr-3 h-5 w-5 text-[#FF9900]" />
               <div className="text-left">
-                <p className="font-semibold">Repay Bill</p>
-                <p className="text-sm text-muted-foreground">Make payment now</p>
+                <p className="font-semibold">Pay Bill</p>
+                <p className="text-sm text-muted-foreground">
+                  Make payment now
+                </p>
               </div>
             </Button>
 
-            <Button
-              variant="outline"
-              className="justify-start h-auto py-4"
-            >
+            <Button variant="outline" className="justify-start h-auto py-4">
               <Unlock className="mr-3 h-5 w-5 text-[#0099FF]" />
               <div className="text-left">
-                <p className="font-semibold">
-                  Release Collateral
-                </p>
+                <p className="font-semibold">Release Collateral</p>
                 <p className="text-sm text-muted-foreground">Unpledge assets</p>
               </div>
             </Button>
 
-            <Button
-              variant="outline"
-              className="justify-start h-auto py-4"
-            >
+            <Button variant="outline" className="justify-start h-auto py-4">
               <Plus className="mr-3 h-5 w-5 text-[#00CC66]" />
               <div className="text-left">
-                <p className="font-semibold">
-                  Add Collateral
-                </p>
+                <p className="font-semibold">Add Collateral</p>
                 <p className="text-sm text-muted-foreground">
                   Pledge more assets
                 </p>
               </div>
             </Button>
 
-            <Button
-              variant="outline"
-              className="justify-start h-auto py-4"
-            >
+            <Button variant="outline" className="justify-start h-auto py-4">
               <ArrowUpCircle className="mr-3 h-5 w-5 text-[#9933FF]" />
               <div className="text-left">
-                <p className="font-semibold">
-                  Top-Up Loan
-                </p>
+                <p className="font-semibold">Top-Up Loan</p>
                 <p className="text-sm text-muted-foreground">Increase amount</p>
               </div>
             </Button>
 
-            <Button
-              variant="outline"
-              className="justify-start h-auto py-4"
-            >
+            <Button variant="outline" className="justify-start h-auto py-4">
               <XCircle className="mr-3 h-5 w-5 text-[#FF3333]" />
               <div className="text-left">
-                <p className="font-semibold">
-                  Foreclosure
+                <p className="font-semibold">Foreclosure</p>
+                <p className="text-sm text-muted-foreground">
+                  Close loan early
                 </p>
-                <p className="text-sm text-muted-foreground">Close loan early</p>
               </div>
             </Button>
           </div>
@@ -388,10 +488,10 @@ const Customer = () => {
                     className="border-b border-border hover:bg-muted/30 transition-colors"
                   >
                     <td className="py-3 px-4 text-sm text-muted-foreground">
-                      {new Date(txn.date).toLocaleDateString('en-IN', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric'
+                      {new Date(txn.date).toLocaleDateString("en-IN", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
                       })}
                     </td>
                     <td className="py-3 px-4 text-sm font-medium text-foreground">
@@ -401,11 +501,15 @@ const Customer = () => {
                       {txn.amount}
                     </td>
                     <td className="py-3 px-4 text-sm">
-                      <Badge className={`font-medium ${
-                        txn.status === "Completed" ? "bg-[#ECFDF5] text-[#059669]" :
-                        txn.status === "Pending" ? "bg-[#FFFBEB] text-[#D97706]" :
-                        "bg-[#FEF2F2] text-[#DC2626]"
-                      }`}>
+                      <Badge
+                        className={`font-medium ${
+                          txn.status === "Completed"
+                            ? "bg-[#ECFDF5] text-[#059669]"
+                            : txn.status === "Pending"
+                            ? "bg-[#FFFBEB] text-[#D97706]"
+                            : "bg-[#FEF2F2] text-[#DC2626]"
+                        }`}
+                      >
                         {txn.status}
                       </Badge>
                     </td>
@@ -422,6 +526,57 @@ const Customer = () => {
 
       {/* Floating ChatBot */}
       <FloatingChatBot />
+
+      {/* OTP Modal */}
+      <Dialog open={isOtpModalOpen} onOpenChange={setIsOtpModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Verify OTP to Refresh Drawing Power</DialogTitle>
+            <DialogDescription>
+              Enter the OTP to update your drawing power with the latest market
+              values.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="otp">One-Time Password</Label>
+              <Input
+                id="otp"
+                type="text"
+                placeholder="Enter 6-digit OTP"
+                value={otpInput}
+                onChange={(e) => setOtpInput(e.target.value)}
+                maxLength={6}
+                className="text-center text-2xl tracking-widest placeholder:text-sm placeholder:font-light placeholder:text-muted-foreground/50"
+              />
+              <p className="text-sm text-muted-foreground text-center mt-2">
+                OTP for demo:{" "}
+                <span className="font-mono font-semibold text-foreground">
+                  {generatedOtp}
+                </span>
+              </p>
+            </div>
+          </div>
+          <DialogFooter className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsOtpModalOpen(false);
+                setOtpInput("");
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleOtpSubmit}
+              disabled={otpInput.length !== 6}
+              className="bg-gradient-primary hover:opacity-90"
+            >
+              Verify & Refresh
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
