@@ -167,7 +167,7 @@ const Customer = () => {
               </div>
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              {repaidPercentage.toFixed(1)}% repaid •{" "}
+              {repaidPercentage.toFixed(1)}% utilised •{" "}
               {customer.outstandingBalance} remaining
             </p>
           </CardContent>

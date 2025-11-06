@@ -168,7 +168,7 @@ const Risk = () => {
       {/* Recent Templates */}
       <Card className="shadow-medium">
         <CardHeader>
-          <CardTitle>Recent Templates</CardTitle>
+          <CardTitle>Rules Templates</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid gap-3 md:grid-cols-3">
