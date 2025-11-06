@@ -21,11 +21,6 @@ const menuItems = [
     icon: LayoutDashboard,
   },
   {
-    title: "Business Rules",
-    url: "/business-rules",
-    icon: Settings,
-  },
-  {
     title: "Portfolio Metrics",
     url: "/portfolio",
     icon: TrendingUp,
@@ -36,10 +31,15 @@ const menuItems = [
     icon: AlertTriangle,
   },
   {
-    title: "Customer Portal",
-    url: "/customer",
-    icon: User,
+    title: "Business Rules",
+    url: "/business-rules",
+    icon: Settings,
   },
+  // {
+  //   title: "Customer Portal",
+  //   url: "/customer",
+  //   icon: User,
+  // },
   {
     title: "Customer Relationship Manager",
     url: "/customer-portfolio",
