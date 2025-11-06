@@ -22,6 +22,7 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
+import { toast } from "sonner";
 
 const assetComposition = [
   { name: "Equities", value: 45, color: "#60A5FA" },
@@ -191,7 +192,7 @@ const Portfolio = () => {
             Analyze asset composition and portfolio health
           </p>
         </div>
-        <Button variant="outline">
+        <Button variant="outline" onClick={() => toast.success("Generating portfolio report...")}>
           <Download className="mr-2 h-4 w-4" />
           Export Report
         </Button>
@@ -305,15 +306,15 @@ const Portfolio = () => {
           />
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={() => toast.info("Import functionality coming soon!")}>
             <Upload className="mr-2 h-4 w-4" />
             Import
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={() => toast.success("Exporting portfolio data...")}>
             <Download className="mr-2 h-4 w-4" />
             Export
           </Button>
-          <Button size="sm" className="bg-gradient-primary hover:opacity-90">
+          <Button size="sm" className="bg-gradient-primary hover:opacity-90" onClick={() => toast.info("AI is analyzing portfolio metrics...")}>
             <Sparkles className="mr-2 h-4 w-4" />
             Ask AI
           </Button>

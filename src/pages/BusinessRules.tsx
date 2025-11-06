@@ -666,15 +666,15 @@ const BusinessRules = () => {
 
               {/* Action Buttons */}
               <div className="flex gap-3 pt-4 border-t">
-                <Button variant="outline" className="flex-1">
+                <Button variant="outline" className="flex-1" onClick={() => toast.success(`Duplicating rule: ${selectedRule.name}`)}>
                   <Copy className="mr-2 h-4 w-4" />
                   Duplicate
                 </Button>
-                <Button variant="outline" className="flex-1">
+                <Button variant="outline" className="flex-1" onClick={() => toast.info(`Archiving rule: ${selectedRule.name}`)}>
                   <Archive className="mr-2 h-4 w-4" />
                   Archive
                 </Button>
-                <Button className="flex-1 bg-gradient-primary hover:opacity-90">
+                <Button className="flex-1 bg-gradient-primary hover:opacity-90" onClick={() => toast.info("Opening rule editor...")}>
                   <FileEdit className="mr-2 h-4 w-4" />
                   Edit Rule
                 </Button>

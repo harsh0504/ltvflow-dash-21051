@@ -23,6 +23,7 @@ import { motion } from "motion/react";
 import { AuditTrail } from "@/components/AuditTrail";
 import { mockCustomers, mockApplications } from "@/data/mockData";
 import { staggerConfig } from "@/lib/animations";
+import { toast } from "sonner";
 
 const CustomerPortfolioManager = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -109,15 +110,15 @@ const CustomerPortfolioManager = () => {
           />
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={() => toast.info("Import functionality coming soon!")}>
             <Upload className="mr-2 h-4 w-4" />
             Import
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={() => toast.success("Exporting customer data...")}>
             <Download className="mr-2 h-4 w-4" />
             Export
           </Button>
-          <Button size="sm" className="bg-gradient-primary hover:opacity-90">
+          <Button size="sm" className="bg-gradient-primary hover:opacity-90" onClick={() => toast.info("AI assistant is analyzing customer data...")}>
             <Sparkles className="mr-2 h-4 w-4" />
             Ask AI
           </Button>
@@ -215,7 +216,7 @@ const CustomerPortfolioManager = () => {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end" className="w-48">
-                            <DropdownMenuItem>{user.action}</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => toast.success(`Action "${user.action}" initiated for ${user.name}`)}>{user.action}</DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </td>

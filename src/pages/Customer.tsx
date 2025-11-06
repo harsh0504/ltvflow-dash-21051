@@ -39,6 +39,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { mockCustomers, getTransactionsByCustomerId } from "@/data/mockData";
+import { toast } from "sonner";
 
 // Using CUS001 - Rajesh Kumar Sharma as the logged-in customer
 const customer = mockCustomers[0];
@@ -240,7 +241,6 @@ const Customer = () => {
             <div className="text-3xl font-bold text-foreground mb-2">
               {drawingPower}
             </div>
-            <p className="text-xs text-muted-foreground">50% of market value</p>
             <p className="text-xs text-muted-foreground mt-1">
               Last updated on {lastUpdated}
             </p>
@@ -399,7 +399,11 @@ const Customer = () => {
         </CardHeader>
         <CardContent>
           <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-5">
-            <Button variant="outline" className="justify-start h-auto py-4">
+            <Button
+              variant="outline"
+              className="justify-start h-auto py-4"
+              onClick={() => toast.info("Redirecting to payment gateway...")}
+            >
               <CreditCard className="mr-3 h-5 w-5 text-[#FF9900]" />
               <div className="text-left">
                 <p className="font-semibold">Pay Bill</p>
@@ -409,7 +413,13 @@ const Customer = () => {
               </div>
             </Button>
 
-            <Button variant="outline" className="justify-start h-auto py-4">
+            <Button
+              variant="outline"
+              className="justify-start h-auto py-4"
+              onClick={() =>
+                toast.success("Collateral release request initiated")
+              }
+            >
               <Unlock className="mr-3 h-5 w-5 text-[#0099FF]" />
               <div className="text-left">
                 <p className="font-semibold">Release Collateral</p>
@@ -417,7 +427,11 @@ const Customer = () => {
               </div>
             </Button>
 
-            <Button variant="outline" className="justify-start h-auto py-4">
+            <Button
+              variant="outline"
+              className="justify-start h-auto py-4"
+              onClick={() => toast.info("Opening collateral pledge form...")}
+            >
               <Plus className="mr-3 h-5 w-5 text-[#00CC66]" />
               <div className="text-left">
                 <p className="font-semibold">Add Collateral</p>
@@ -427,7 +441,13 @@ const Customer = () => {
               </div>
             </Button>
 
-            <Button variant="outline" className="justify-start h-auto py-4">
+            <Button
+              variant="outline"
+              className="justify-start h-auto py-4"
+              onClick={() =>
+                toast.success("Top-up loan request submitted for review")
+              }
+            >
               <ArrowUpCircle className="mr-3 h-5 w-5 text-[#9933FF]" />
               <div className="text-left">
                 <p className="font-semibold">Top-Up Loan</p>
@@ -435,7 +455,15 @@ const Customer = () => {
               </div>
             </Button>
 
-            <Button variant="outline" className="justify-start h-auto py-4">
+            <Button
+              variant="outline"
+              className="justify-start h-auto py-4"
+              onClick={() =>
+                toast.info(
+                  "Foreclosure request initiated. Our team will contact you shortly."
+                )
+              }
+            >
               <XCircle className="mr-3 h-5 w-5 text-[#FF3333]" />
               <div className="text-left">
                 <p className="font-semibold">Foreclosure</p>
@@ -453,7 +481,13 @@ const Customer = () => {
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>Transaction History</CardTitle>
-            <Button variant="outline" size="sm">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                toast.success("Downloading transaction statement...")
+              }
+            >
               <Download className="mr-2 h-4 w-4" />
               Download Statement
             </Button>

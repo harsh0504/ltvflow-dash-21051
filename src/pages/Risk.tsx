@@ -181,6 +181,7 @@ const Risk = () => {
                 key={idx}
                 variant="outline"
                 className="justify-start text-sm"
+                onClick={() => toast.success(`Loading template: ${template}`)}
               >
                 {template}
               </Button>

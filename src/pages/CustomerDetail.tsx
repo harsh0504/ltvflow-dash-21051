@@ -6,17 +6,13 @@ import {
   Calendar,
   Bell,
   Download,
-  Plus,
-  CreditCard,
-  Unlock,
-  ArrowUpCircle,
-  XCircle,
   User as UserIcon,
   Mail,
   Phone,
   MapPin,
   CheckCircle,
   ArrowLeft,
+  Zap,
 } from "lucide-react";
 import { RupeeIcon } from "@/components/RupeeIcon";
 import {
@@ -29,8 +25,10 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { AuditTrail } from "@/components/AuditTrail";
+import { FloatingChatBot } from "@/components/FloatingChatBot";
 import { useParams, useNavigate } from "react-router-dom";
 import { getCustomerById, getTransactionsByCustomerId } from "@/data/mockData";
+import { toast } from "sonner";
 
 const collateralData = [
   { date: "Jan", value: 2800 },
@@ -47,11 +45,17 @@ const CustomerDetail = () => {
 
   const customer = getCustomerById(customerId || "");
 
+  const currentDrawingPower = customer ? customer.marketValueNumeric * 0.5 : 0;
+  const lastUpdatedTime = new Date();
+
   if (!customer) {
     return (
       <div className="space-y-6">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" onClick={() => navigate("/customer-portfolio")}>
+          <Button
+            variant="ghost"
+            onClick={() => navigate("/customer-portfolio")}
+          >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Portfolio
           </Button>
@@ -68,15 +72,32 @@ const CustomerDetail = () => {
   const transactions = getTransactionsByCustomerId(customer.id);
   const paidAmount = customer.loanAmountNumeric - customer.outstandingNumeric;
   const repaidPercentage = (paidAmount / customer.loanAmountNumeric) * 100;
-  const disbursedDate = new Date(customer.disbursedDate).toLocaleDateString('en-IN', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric'
+  const disbursedDate = new Date(customer.disbursedDate).toLocaleDateString(
+    "en-IN",
+    {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }
+  );
+  const dueDate = new Date(customer.dueDate).toLocaleDateString("en-IN", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
   });
-  const dueDate = new Date(customer.dueDate).toLocaleDateString('en-IN', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric'
+
+  const drawingPower = new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  }).format(currentDrawingPower);
+
+  const lastUpdated = lastUpdatedTime.toLocaleDateString("en-IN", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   });
 
   return (
@@ -99,8 +120,12 @@ const CustomerDetail = () => {
             <div className="flex-1">
               <div className="flex items-start justify-between">
                 <div>
-                  <h1 className="text-3xl font-bold text-foreground">{customer.name}</h1>
-                  <p className="text-muted-foreground mt-1">Customer ID: {customer.id}</p>
+                  <h1 className="text-3xl font-bold text-foreground">
+                    {customer.name}
+                  </h1>
+                  <p className="text-muted-foreground mt-1">
+                    Customer ID: {customer.id}
+                  </p>
                 </div>
                 <Badge className="bg-[#ECFDF5] text-[#059669] font-medium">
                   <CheckCircle className="h-3 w-3 mr-1" />
@@ -128,19 +153,34 @@ const CustomerDetail = () => {
               </div>
 
               <div className="mt-4 pt-4 border-t border-border">
-                <h3 className="text-sm font-semibold text-foreground mb-2">KYC Information</h3>
+                <h3 className="text-sm font-semibold text-foreground mb-2">
+                  KYC Information
+                </h3>
                 <div className="grid grid-cols-3 gap-4 text-sm">
                   <div>
                     <span className="text-muted-foreground">KYC Status:</span>
-                    <p className="font-medium text-success">{customer.kycStatus}</p>
+                    <p className="font-medium text-success">
+                      {customer.kycStatus}
+                    </p>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Verification Date:</span>
-                    <p className="font-medium text-foreground">{new Date(customer.verificationDate).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+                    <span className="text-muted-foreground">
+                      Verification Date:
+                    </span>
+                    <p className="font-medium text-foreground">
+                      {new Date(customer.verificationDate).toLocaleDateString(
+                        "en-IN",
+                        { month: "short", day: "numeric", year: "numeric" }
+                      )}
+                    </p>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Risk Category:</span>
-                    <p className="font-medium text-foreground">{customer.riskCategory}</p>
+                    <span className="text-muted-foreground">
+                      Risk Category:
+                    </span>
+                    <p className="font-medium text-foreground">
+                      {customer.riskCategory}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -150,7 +190,7 @@ const CustomerDetail = () => {
       </Card>
 
       {/* Loan Summary Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
         <Card className="shadow-soft hover:shadow-medium transition-all">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -161,7 +201,9 @@ const CustomerDetail = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground">{customer.loanAmount}</div>
+            <div className="text-2xl font-bold text-foreground">
+              {customer.loanAmount}
+            </div>
             <p className="text-xs text-muted-foreground mt-1">
               Disbursed on {disbursedDate}
             </p>
@@ -178,7 +220,9 @@ const CustomerDetail = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground">{customer.outstandingBalance}</div>
+            <div className="text-2xl font-bold text-foreground">
+              {customer.outstandingBalance}
+            </div>
             <div className="mt-2">
               <div className="relative h-2 w-full rounded-full bg-gray-200 overflow-hidden">
                 <div
@@ -188,7 +232,8 @@ const CustomerDetail = () => {
               </div>
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              {repaidPercentage.toFixed(1)}% repaid • {customer.outstandingBalance} remaining
+              {repaidPercentage.toFixed(1)}% repaid •{" "}
+              {customer.outstandingBalance} remaining
             </p>
           </CardContent>
         </Card>
@@ -196,16 +241,21 @@ const CustomerDetail = () => {
         <Card className="shadow-soft hover:shadow-medium transition-all">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Amount to be Paid
+              Last Bill
             </CardTitle>
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gray-100">
               <Calendar className="h-4 w-4 text-gray-500" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground">{customer.nextPayment}</div>
+            <div className="text-2xl font-bold text-foreground">
+              {customer.nextPayment}
+            </div>
             <p className="text-xs text-muted-foreground mt-1">
               Due on {dueDate}
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              @{customer.interestRate}% interest
             </p>
           </CardContent>
         </Card>
@@ -220,11 +270,36 @@ const CustomerDetail = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <Badge className={`font-medium ${customer.status === "Active" ? "bg-[#ECFDF5] text-[#059669]" : "bg-[#FEF2F2] text-[#DC2626]"}`}>
+            <Badge
+              className={`font-medium ${
+                customer.status === "Active"
+                  ? "bg-[#ECFDF5] text-[#059669]"
+                  : "bg-[#FEF2F2] text-[#DC2626]"
+              }`}
+            >
               {customer.status}
             </Badge>
             <p className="text-xs text-muted-foreground mt-2">
               All payments on time
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-soft hover:shadow-medium transition-all lg:col-span-2">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Drawing Power
+            </CardTitle>
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-purple-100">
+              <Zap className="h-4 w-4 text-purple-600" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-foreground mb-2">
+              {drawingPower}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Last updated on {lastUpdated}
             </p>
           </CardContent>
         </Card>
@@ -236,8 +311,20 @@ const CustomerDetail = () => {
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle>Collateral Summary</CardTitle>
-              <Badge className={`font-medium ${customer.ltvNumeric <= 60 ? "bg-[#ECFDF5] text-[#059669]" : customer.ltvNumeric <= 70 ? "bg-[#FFFBEB] text-[#D97706]" : "bg-[#FEF2F2] text-[#DC2626]"}`}>
-                {customer.ltvNumeric <= 60 ? "Healthy" : customer.ltvNumeric <= 70 ? "Caution" : "At Risk"}
+              <Badge
+                className={`font-medium ${
+                  customer.ltvNumeric <= 60
+                    ? "bg-[#ECFDF5] text-[#059669]"
+                    : customer.ltvNumeric <= 70
+                    ? "bg-[#FFFBEB] text-[#D97706]"
+                    : "bg-[#FEF2F2] text-[#DC2626]"
+                }`}
+              >
+                {customer.ltvNumeric <= 60
+                  ? "Healthy"
+                  : customer.ltvNumeric <= 70
+                  ? "Caution"
+                  : "At Risk"}
               </Badge>
             </div>
           </CardHeader>
@@ -245,18 +332,26 @@ const CustomerDetail = () => {
             <div className="grid grid-cols-2 gap-4">
               <div className="rounded-lg border border-border p-3">
                 <p className="text-sm text-muted-foreground">Pledged Value</p>
-                <p className="text-xl font-semibold text-foreground">{customer.pledgedValue}</p>
+                <p className="text-xl font-semibold text-foreground">
+                  {customer.pledgedValue}
+                </p>
               </div>
               <div className="rounded-lg border border-border p-3">
-                <p className="text-sm text-muted-foreground">Current Market Value</p>
-                <p className="text-xl font-semibold text-foreground">{customer.marketValue}</p>
+                <p className="text-sm text-muted-foreground">
+                  Current Market Value
+                </p>
+                <p className="text-xl font-semibold text-foreground">
+                  {customer.marketValue}
+                </p>
               </div>
             </div>
 
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Current LTV</span>
-                <span className="font-semibold text-foreground">{customer.ltv}</span>
+                <span className="font-semibold text-foreground">
+                  {customer.ltv}
+                </span>
               </div>
               <div className="relative h-8 w-full rounded-full bg-muted overflow-hidden">
                 <div className="absolute inset-0 flex">
@@ -292,15 +387,36 @@ const CustomerDetail = () => {
             <div className="pt-2 space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Equities</span>
-                <span className="font-medium text-foreground">₹18,50,000 (55%)</span>
+                <span className="font-medium text-foreground">
+                  {new Intl.NumberFormat("en-IN", {
+                    style: "currency",
+                    currency: "INR",
+                    maximumFractionDigits: 0,
+                  }).format(customer.marketValueNumeric * 0.55)}{" "}
+                  (55%)
+                </span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Mutual Funds</span>
-                <span className="font-medium text-foreground">₹12,00,000 (36%)</span>
+                <span className="font-medium text-foreground">
+                  {new Intl.NumberFormat("en-IN", {
+                    style: "currency",
+                    currency: "INR",
+                    maximumFractionDigits: 0,
+                  }).format(customer.marketValueNumeric * 0.36)}{" "}
+                  (36%)
+                </span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Bonds</span>
-                <span className="font-medium text-foreground">₹3,00,000 (9%)</span>
+                <span className="font-medium text-foreground">
+                  {new Intl.NumberFormat("en-IN", {
+                    style: "currency",
+                    currency: "INR",
+                    maximumFractionDigits: 0,
+                  }).format(customer.marketValueNumeric * 0.09)}{" "}
+                  (9%)
+                </span>
               </div>
             </div>
           </CardContent>
@@ -348,87 +464,12 @@ const CustomerDetail = () => {
         </Card>
       </div>
 
-      {/* Quick Actions */}
-      <Card className="shadow-medium">
-        <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-5">
-            <Button
-              variant="outline"
-              className="justify-start h-auto py-4"
-            >
-              <CreditCard className="mr-3 h-5 w-5 text-[#FF9900]" />
-              <div className="text-left">
-                <p className="font-semibold">Repay Bill</p>
-                <p className="text-sm text-muted-foreground">Make payment now</p>
-              </div>
-            </Button>
-
-            <Button
-              variant="outline"
-              className="justify-start h-auto py-4"
-            >
-              <Unlock className="mr-3 h-5 w-5 text-[#0099FF]" />
-              <div className="text-left">
-                <p className="font-semibold">
-                  Release Collateral
-                </p>
-                <p className="text-sm text-muted-foreground">Unpledge assets</p>
-              </div>
-            </Button>
-
-            <Button
-              variant="outline"
-              className="justify-start h-auto py-4"
-            >
-              <Plus className="mr-3 h-5 w-5 text-[#00CC66]" />
-              <div className="text-left">
-                <p className="font-semibold">
-                  Add Collateral
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Pledge more assets
-                </p>
-              </div>
-            </Button>
-
-            <Button
-              variant="outline"
-              className="justify-start h-auto py-4"
-            >
-              <ArrowUpCircle className="mr-3 h-5 w-5 text-[#9933FF]" />
-              <div className="text-left">
-                <p className="font-semibold">
-                  Top-Up Loan
-                </p>
-                <p className="text-sm text-muted-foreground">Increase amount</p>
-              </div>
-            </Button>
-
-            <Button
-              variant="outline"
-              className="justify-start h-auto py-4"
-            >
-              <XCircle className="mr-3 h-5 w-5 text-[#FF3333]" />
-              <div className="text-left">
-                <p className="font-semibold">
-                  Foreclosure
-                </p>
-                <p className="text-sm text-muted-foreground">Close loan early</p>
-              </div>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Transaction History */}
       <Card className="shadow-medium">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>Transaction History</CardTitle>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={() => toast.success("Downloading transaction statement...")}>
               <Download className="mr-2 h-4 w-4" />
               Download Statement
             </Button>
@@ -463,10 +504,10 @@ const CustomerDetail = () => {
                     className="border-b border-border hover:bg-muted/30 transition-colors"
                   >
                     <td className="py-3 px-4 text-sm text-muted-foreground">
-                      {new Date(txn.date).toLocaleDateString('en-IN', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric'
+                      {new Date(txn.date).toLocaleDateString("en-IN", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
                       })}
                     </td>
                     <td className="py-3 px-4 text-sm font-medium text-foreground">
@@ -476,11 +517,15 @@ const CustomerDetail = () => {
                       {txn.amount}
                     </td>
                     <td className="py-3 px-4 text-sm">
-                      <Badge className={`font-medium ${
-                        txn.status === "Completed" ? "bg-[#ECFDF5] text-[#059669]" :
-                        txn.status === "Pending" ? "bg-[#FFFBEB] text-[#D97706]" :
-                        "bg-[#FEF2F2] text-[#DC2626]"
-                      }`}>
+                      <Badge
+                        className={`font-medium ${
+                          txn.status === "Completed"
+                            ? "bg-[#ECFDF5] text-[#059669]"
+                            : txn.status === "Pending"
+                            ? "bg-[#FFFBEB] text-[#D97706]"
+                            : "bg-[#FEF2F2] text-[#DC2626]"
+                        }`}
+                      >
                         {txn.status}
                       </Badge>
                     </td>
@@ -497,6 +542,9 @@ const CustomerDetail = () => {
 
       {/* Audit Trail */}
       <AuditTrail />
+
+      {/* Floating ChatBot */}
+      <FloatingChatBot />
     </div>
   );
 };
