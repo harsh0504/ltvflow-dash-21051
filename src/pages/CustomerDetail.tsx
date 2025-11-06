@@ -469,7 +469,13 @@ const CustomerDetail = () => {
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>Transaction History</CardTitle>
-            <Button variant="outline" size="sm" onClick={() => toast.success("Downloading transaction statement...")}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                toast.success("Downloading transaction statement...")
+              }
+            >
               <Download className="mr-2 h-4 w-4" />
               Download Statement
             </Button>
