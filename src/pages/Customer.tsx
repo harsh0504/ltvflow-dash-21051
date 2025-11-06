@@ -581,10 +581,15 @@ const Customer = () => {
                 placeholder="Enter 6-digit OTP"
                 value={otpInput}
                 onChange={(e) => setOtpInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && otpInput.length === 6) {
+                    handleOtpSubmit();
+                  }
+                }}
                 maxLength={6}
-                className="text-center text-2xl tracking-widest placeholder:text-sm placeholder:font-light placeholder:text-muted-foreground/50"
+                className="text-sm text-left flex items-center placeholder:text-sm placeholder:text-left placeholder:text-muted-foreground/50"
               />
-              <p className="text-sm text-muted-foreground text-center mt-2">
+              <p className="text-sm text-muted-foreground text-left mt-2">
                 OTP for demo:{" "}
                 <span className="font-mono font-semibold text-foreground">
                   {generatedOtp}
