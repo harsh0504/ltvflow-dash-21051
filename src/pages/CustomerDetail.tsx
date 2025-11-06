@@ -232,8 +232,7 @@ const CustomerDetail = () => {
               </div>
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              {repaidPercentage.toFixed(1)}% utilised •{" "}
-              {customer.outstandingBalance} remaining
+              {repaidPercentage.toFixed(1)}% utilised{" "}
             </p>
           </CardContent>
         </Card>
@@ -255,7 +254,7 @@ const CustomerDetail = () => {
               Due on {dueDate}
             </p>
             <p className="text-xs text-muted-foreground mt-1">
-              @{customer.interestRate}% interest
+              @ {customer.interestRate}% interest rate
             </p>
           </CardContent>
         </Card>

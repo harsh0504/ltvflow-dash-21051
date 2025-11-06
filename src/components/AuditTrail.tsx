@@ -4,19 +4,19 @@ import { Clock } from "lucide-react";
 
 const auditEvents = [
   {
-    timestamp: "2024-07-10 14:32:15",
+    timestamp: "2025-11-06 14:32:15",
     user: "admin@kotak.com",
     action: "Customer Data Updated",
     status: "Success",
   },
   {
-    timestamp: "2024-07-10 13:15:42",
+    timestamp: "2025-11-06 13:15:42",
     user: "manager@kotak.com",
     action: "LTV Threshold Modified",
     status: "Success",
   },
   {
-    timestamp: "2024-07-10 11:20:30",
+    timestamp: "2025-11-06 11:20:30",
     user: "system",
     action: "Automated Risk Check",
     status: "Completed",

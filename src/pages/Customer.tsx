@@ -167,8 +167,7 @@ const Customer = () => {
               </div>
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              {repaidPercentage.toFixed(1)}% utilised •{" "}
-              {customer.outstandingBalance} remaining
+              {repaidPercentage.toFixed(1)}% utilised{" "}
             </p>
           </CardContent>
         </Card>
@@ -189,7 +188,9 @@ const Customer = () => {
             <p className="text-xs text-muted-foreground mt-1">
               Due on {dueDate}
             </p>
-            <p className="text-xs text-muted-foreground mt-1">@8.5% intrest</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              @ 8.5% interest rate
+            </p>
           </CardContent>
         </Card>
 
